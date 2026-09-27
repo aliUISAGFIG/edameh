@@ -1,0 +1,38 @@
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Java / Maven
+target/
+out/
+*.class
+
+# Logs
+*.log
+logs/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Local Spring configuration with secrets
+application-local.yml
+application-local.yaml
+application-local.properties
+
+# Frontend / Node.js
+node_modules/
+dist/
+.vite/
+coverage/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
