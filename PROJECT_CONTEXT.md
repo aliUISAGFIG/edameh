@@ -4,9 +4,12 @@
 
 \## Aktueller Stand
 
-
-
-Die Produkt- und Designphase für das MVP ist weitgehend abgeschlossen.
+- Das Spring-Boot-Backend ist eingerichtet.
+- PostgreSQL 17 läuft über Docker Compose.
+- Die Anwendung kann erfolgreich eine Verbindung zur Datenbank herstellen.
+- Flyway ist eingerichtet.
+- Die initiale Datenbankstruktur wurde mit `V1__initial_schema.sql` erstellt.
+- Die erste Flyway-Migration wurde erfolgreich ausgeführt.
 
 
 
@@ -124,7 +127,7 @@ Für das Frontend gelten:
 
 \- Anzeigen besitzen genau einen Eigentümer.
 
-\- Neue Anzeigen erhalten den Status `ACTIVE`.
+\- neue Anzeigen erhalten den Status `ACTIVE`.
 
 \- Mögliche Statuswerte:
 
@@ -267,10 +270,7 @@ Für das Frontend gelten:
 \## Aktueller Arbeitsschritt
 
 
-
-Die lokale Datenbankverbindung ist hergestellt. Docker veröffentlicht PostgreSQL auf Host-Port `5433` (Container-Port `5432`), da auf Windows bereits PostgreSQL 18 den Host-Port `5432` belegt. Die lokale Spring-Konfiguration verwendet `jdbc:postgresql://localhost:5433/edameh`.
-
-`.env` und `backend/src/main/resources/application-local.properties` bleiben unversioniert und per Git ignore ausgeschlossen. Die Zugangsdaten wurden nicht geändert; das Daten-Volume blieb erhalten.
+Grundlegende Backend-Packages anlegen.
 
 
 
@@ -281,8 +281,7 @@ Die lokale Datenbankverbindung ist hergestellt. Docker veröffentlicht PostgreSQ
 \## Nächster Schritt
 
 
-
-Als Nächstes die Datenbankkonfiguration für Integrationstests separat festlegen und gemäß der vorgesehenen Testcontainers-Strategie umsetzen. `mvnw test` verwendet derzeit das Default-Profil ohne DataSource-URL und schlägt deshalb fehl; der Anwendungsstart mit `local` funktioniert. Die folgende ursprüngliche Implementierungsreihenfolge bleibt als Orientierung bestehen; Grundprojekt und lokale PostgreSQL-Anbindung sind bereits vorhanden.
+Die Funktion `Benutzer` und die Registrierung implementieren.
 
 
 
