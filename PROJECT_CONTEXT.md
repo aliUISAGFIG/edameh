@@ -32,7 +32,7 @@ Folgende Dokumente sind vorhanden:
 
 
 
-Die Backend-Implementierung hat noch nicht begonnen.
+Das Spring-Boot-Grundprojekt liegt unter `backend/` (Java 25, Spring Boot 4.1.1). Der Start mit dem Profil `local` und PostgreSQL 17 über Docker Compose wurde erfolgreich geprüft. Fachliche Module sind noch nicht implementiert.
 
 
 
@@ -268,7 +268,9 @@ Für das Frontend gelten:
 
 
 
-Vorbereitung der Backend-Implementierung.
+Die lokale Datenbankverbindung ist hergestellt. Docker veröffentlicht PostgreSQL auf Host-Port `5433` (Container-Port `5432`), da auf Windows bereits PostgreSQL 18 den Host-Port `5432` belegt. Die lokale Spring-Konfiguration verwendet `jdbc:postgresql://localhost:5433/edameh`.
+
+`.env` und `backend/src/main/resources/application-local.properties` bleiben unversioniert und per Git ignore ausgeschlossen. Die Zugangsdaten wurden nicht geändert; das Daten-Volume blieb erhalten.
 
 
 
@@ -280,7 +282,7 @@ Vorbereitung der Backend-Implementierung.
 
 
 
-Spring-Boot-Projekt mit Spring Initializr erstellen.
+Als Nächstes die Datenbankkonfiguration für Integrationstests separat festlegen und gemäß der vorgesehenen Testcontainers-Strategie umsetzen. `mvnw test` verwendet derzeit das Default-Profil ohne DataSource-URL und schlägt deshalb fehl; der Anwendungsstart mit `local` funktioniert. Die folgende ursprüngliche Implementierungsreihenfolge bleibt als Orientierung bestehen; Grundprojekt und lokale PostgreSQL-Anbindung sind bereits vorhanden.
 
 
 
@@ -331,6 +333,16 @@ Neue wichtige Entscheidungen sollen hier dokumentiert werden, sobald sie währen
 
 
 \## Änderungsprotokoll
+
+\### 2026-09-28 – Lokale PostgreSQL-Verbindung
+
+\- Authentifizierungsfehler auf einen Portkonflikt mit dem laufenden Windows-PostgreSQL 18 zurückgeführt; Compose-Port auf `5433:5432` und lokale Spring-URL entsprechend angepasst.
+
+\- TCP-Anmeldung von Windows und einem temporären PostgreSQL-Client-Container über den Host-Port erfolgreich gegen PostgreSQL 17.11 geprüft.
+
+\- Start mit Profil `local` inklusive Hikari, Flyway und JPA erfolgreich; `Started EdamehApplication` bestätigt und Anwendung anschließend gestoppt. Flyway hat seine History-Tabelle angelegt; fachliche Migrationen sind noch nicht vorhanden.
+
+\- `mvnw test`: ein Test, ein Fehler wegen fehlender DataSource-Konfiguration im Default-Profil. Keine Test-Workarounds, Dependency-Änderungen oder Passwortänderungen vorgenommen.
 
 \### 2026-09-27 – Fachliche Präzisierungen
 
