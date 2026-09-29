@@ -93,6 +93,8 @@ Anzeigendetails
 
 ### Arbeitsweisen
 
+Eine oder mehrere Arbeitsweisen auswählen
+
 - `REMOTE`
 - `VOR_ORT`
 - `HYBRID`

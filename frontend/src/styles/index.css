@@ -1,0 +1,117 @@
+@import '@fontsource-variable/inter';
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+@theme inline {
+  --font-sans: 'Inter Variable', sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--muted);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--primary);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--primary);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.65rem;
+  --radius-lg: 0.85rem;
+  --radius-xl: 1.2rem;
+}
+:root {
+  color-scheme: light;
+  --background: #f7f8fc;
+  --foreground: #202335;
+  --card: #fff;
+  --primary: #6554db;
+  --primary-foreground: #fff;
+  --muted: #f0f1f7;
+  --muted-foreground: #667085;
+  --accent: #efecff;
+  --border: #e3e5ef;
+  --destructive: #bd2342;
+}
+.dark {
+  color-scheme: dark;
+  --background: #11131e;
+  --foreground: #edeef6;
+  --card: #1a1d2b;
+  --primary: #a496ff;
+  --primary-foreground: #16122b;
+  --muted: #24283a;
+  --muted-foreground: #a8b0c5;
+  --accent: #2b2646;
+  --border: #33374b;
+  --destructive: #ff839d;
+}
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply m-0 bg-background text-foreground font-sans antialiased;
+  }
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+  button:not(:disabled),
+  select {
+    cursor: pointer;
+  }
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.035em;
+  }
+  p {
+    line-height: 1.7;
+  }
+  svg {
+    flex-shrink: 0;
+  }
+}
+@layer components {
+  .container-app {
+    @apply mx-auto w-full max-w-[1280px] px-5 md:px-8;
+  }
+  .panel {
+    @apply rounded-xl border bg-card shadow-[0_3px_18px_-12px_rgba(25,28,55,0.16)];
+  }
+  .field {
+    @apply w-full rounded-lg border bg-card px-3 py-2.5 text-sm placeholder:text-muted-foreground disabled:opacity-60;
+  }
+  .label {
+    @apply mb-2 block text-sm font-medium;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[.18em] text-primary;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-md border bg-muted/50 px-2.5 py-1 text-xs font-medium;
+  }
+  .link {
+    @apply text-primary hover:underline underline-offset-4;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -92,7 +92,6 @@ Die Längenangaben dienen als verbindliche Grundlage für Validierung und Datenb
 | beschreibung | VARCHAR(5000) | NOT NULL | Beschreibung |
 | anzeigentyp | VARCHAR(40) | NOT NULL | Art der Anzeige |
 | projektstand | VARCHAR(40) | NOT NULL | Projektstand |
-| arbeitsweise | VARCHAR(20) | NOT NULL | Zusammenarbeit |
 | standort | VARCHAR(120) | optional | Standort |
 | projektlink | VARCHAR(500) | optional | Projektlink |
 | status | VARCHAR(20) | NOT NULL | `ACTIVE` oder `CLOSED` |
@@ -153,6 +152,28 @@ Die Längenangaben dienen als verbindliche Grundlage für Validierung und Datenb
 Technologien werden kontrolliert gepflegt und im MVP nicht als freier Benutzertext angelegt.
 
 ---
+## Tabelle: anzeige_arbeitsweisen
+
+| Spalte | Typ | Regeln |
+|---|---|---|
+| anzeige_id | BIGINT | NOT NULL, FOREIGN KEY |
+| arbeitsweise | VARCHAR | NOT NULL |
+
+Primärschlüssel:
+
+`anzeige_id + arbeitsweise`
+
+Mögliche Werte:
+
+- REMOTE
+- VOR_ORT
+- HYBRID
+
+Geschäftsregeln:
+
+- Eine Anzeige kann mehrere Arbeitsweisen besitzen.
+- Dieselbe Arbeitsweise darf einer Anzeige nicht mehrfach zugeordnet werden.
+- Eine Anzeige muss mindestens eine Arbeitsweise besitzen.
 
 ## Tabelle: anzeige_technologien
 

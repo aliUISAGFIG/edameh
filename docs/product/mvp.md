@@ -41,9 +41,15 @@
 
 ### Arbeitsweise
 
+Eine Anzeige muss mindestens eine und kann mehrere Arbeitsweisen enthalten.
+
+Mögliche Werte:
+
 - `REMOTE`
 - `VOR_ORT`
 - `HYBRID`
+
+Eine Anzeige kann eine, zwei oder alle drei Arbeitsweisen auswählen.
 
 ### Anzeigenstatus
 

@@ -124,7 +124,7 @@ Eine `Anzeige` repräsentiert ein Kooperationsgesuch.
 - `IN_ENTWICKLUNG`
 - `PROTOTYP_VORHANDEN`
 
-### Arbeitsweise
+### Arbeitsweisen
 
 - `REMOTE`
 - `VOR_ORT`

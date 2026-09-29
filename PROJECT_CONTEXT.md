@@ -10,6 +10,9 @@
 - Flyway ist eingerichtet.
 - Die initiale Datenbankstruktur wurde mit `V1__initial_schema.sql` erstellt.
 - Die erste Flyway-Migration wurde erfolgreich ausgeführt.
+- Unter `frontend/` ist eine React-/TypeScript-SPA mit Vite, deutscher Oberfläche, responsiven Ansichten und hellem/dunklem Design implementiert.
+- Das Frontend arbeitet derzeit mit einer separaten MSW-Mock-API; die fachlichen Backend-Endpunkte sind weiterhin noch nicht implementiert.
+- `docs/design/api-contract.md` bleibt die verbindliche API-Quelle. Die reale Backend-Anbindung erfolgt später Feature für Feature über dieselbe zentrale HTTP-Schicht (Session und CSRF).
 
 
 
@@ -123,7 +126,13 @@ Für das Frontend gelten:
 
 \### Anzeigen
 
+- Anzeigen unterstützen mehrere Arbeitsweisen gleichzeitig.
 
+- Eine Anzeige kann `REMOTE`, `VOR_ORT` und/oder `HYBRID` enthalten.
+
+- Die Zuordnung wird über `anzeige_arbeitsweisen` gespeichert.
+
+- Das API-Feld für Anzeigen heißt `arbeitsweisen`.
 
 \- Anzeigen besitzen genau einen Eigentümer.
 
@@ -270,7 +279,7 @@ Für das Frontend gelten:
 \## Aktueller Arbeitsschritt
 
 
-Grundlegende Backend-Packages anlegen.
+Frontend-Anwendung und Mock-API erstellt; Backend-Arbeit anschließend mit Benutzer/Registrierung fortsetzen. Anleitung, Routen und Einschränkungen stehen in `frontend/README.md`.
 
 
 
@@ -319,7 +328,7 @@ Danach:
 
 
 
-Aktuell keine blockierenden Architekturentscheidungen.
+Keine neue Architekturentscheidung nötig. Zwei Vertragsdetails für Unterhaltungen sind offen: Darstellung der letzten Nachricht bei einem neu angelegten, leeren Gespräch und Reihenfolge der Nachrichtenseiten. Auf ausdrücklichen Benutzerwunsch werden Neuanlage leerer Gespräche im Mock und weiterführende Nachrichtenpagination vorerst nicht implementiert. Bestehende Seed-Gespräche können gelesen und fortgesetzt werden. Der API Contract wurde nicht geändert.
 
 
 
@@ -332,6 +341,13 @@ Neue wichtige Entscheidungen sollen hier dokumentiert werden, sobald sie währen
 
 
 \## Änderungsprotokoll
+
+\### 2026-09-29 – Frontend mit Mock-API
+
+- Feature-orientierte React-SPA unter `frontend/` erstellt, einschließlich Anzeigen, Authentifizierung, Profilen und bestehenden Unterhaltungen.
+- MSW-Daten und Demo-Sitzungen bleiben im Arbeitsspeicher; keine Authentifizierungstoken in localStorage. Backend, Docker und Migrationen unverändert.
+- Zentraler API-Client, Formularvalidierung, Query-Caching und Verhaltenstests eingerichtet. Abweichende ältere Wireframe-Funktionen außerhalb des MVP nicht übernommen.
+- API-Vertrag unverändert; offene Gesprächsdetails auf Benutzerwunsch zurückgestellt. Nächster fachlicher Schritt bleibt Java-Backend: Benutzer und Registrierung.
 
 \### 2026-09-28 – Lokale PostgreSQL-Verbindung
 

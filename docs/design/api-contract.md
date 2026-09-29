@@ -236,7 +236,10 @@ Nach erfolgreicher Registrierung wird der Benutzer automatisch angemeldet und ei
   "anzeigename": "Ali",
   "ueberMich": "Ich interessiere mich für Backend- und Lernprojekte.",
   "standort": "Dortmund",
-  "arbeitsweise": "REMOTE",
+  "arbeitsweisen": [
+    "REMOTE",
+    "VOR_ORT"
+  ],
   "githubLink": "https://github.com/beispiel",
   "linkedinLink": null,
   "technologien": [
@@ -266,7 +269,10 @@ Die Statistikwerte werden berechnet und nicht als eigene Profilfelder gespeicher
   "anzeigename": "Ali",
   "ueberMich": "Ich interessiere mich für Backend- und Lernprojekte.",
   "standort": "Dortmund",
-  "arbeitsweise": "REMOTE",
+  "arbeitsweisen": [
+    "REMOTE",
+    "VOR_ORT"
+  ],
   "githubLink": "https://github.com/beispiel",
   "linkedinLink": null,
   "technologieIds": [1, 2, 3]
@@ -399,7 +405,10 @@ Bei mehreren `technologieIds` muss eine Anzeige **alle** ausgewählten Technolog
         { "id": 2, "name": "Spring Boot" }
       ],
       "projektstand": "IN_ENTWICKLUNG",
-      "arbeitsweise": "REMOTE",
+      "arbeitsweisen": [
+        "REMOTE",
+        "VOR_ORT"
+      ],
       "standort": null,
       "status": "ACTIVE",
       "erstelltAm": "2026-09-26T15:30:00"
@@ -449,7 +458,10 @@ Bei mehreren `technologieIds` muss eine Anzeige **alle** ausgewählten Technolog
   "beschreibung": "Ich suche Unterstützung für mein Spring-Boot-Projekt.",
   "anzeigentyp": "UNTERSTUETZUNG_GESUCHT",
   "projektstand": "IN_ENTWICKLUNG",
-  "arbeitsweise": "REMOTE",
+  "arbeitsweisen": [
+    "REMOTE",
+    "VOR_ORT"
+  ],
   "standort": null,
   "projektlink": null,
   "status": "ACTIVE",
@@ -479,7 +491,10 @@ Gelöschte Anzeigen liefern `404 Not Found`.
   "anzeigentyp": "UNTERSTUETZUNG_GESUCHT",
   "kategorieId": 1,
   "projektstand": "IN_ENTWICKLUNG",
-  "arbeitsweise": "REMOTE",
+  "arbeitsweisen": [
+    "REMOTE",
+    "VOR_ORT"
+  ],
   "standort": null,
   "projektlink": null,
   "technologieIds": [1, 2, 3]
@@ -534,7 +549,10 @@ Optionale Parameter:
         { "id": 2, "name": "Spring Boot" }
       ],
       "projektstand": "PROTOTYP_VORHANDEN",
-      "arbeitsweise": "REMOTE",
+      "arbeitsweisen": [
+        "REMOTE",
+        "VOR_ORT"
+      ],
       "standort": null,
       "status": "ACTIVE",
       "erstelltAm": "2026-03-12T10:00:00"

@@ -48,7 +48,26 @@ Aktionen:
 - Bearbeiten
 - Schließen bei `ACTIVE`
 - Löschen
+  Arbeitsweise wird bei Anzeigen nicht als einzelnes Dropdown dargestellt.
 
+Der Benutzer kann eine oder mehrere Optionen auswählen:
+
+- Remote
+- Vor Ort
+- Hybrid
+
+Neben jeder Option wird ein Info-Symbol angezeigt.
+
+Tooltip-Texte:
+
+Remote:
+"Die Zusammenarbeit findet vollständig online statt."
+
+Vor Ort:
+"Die Zusammenarbeit findet persönlich an einem gemeinsamen Ort statt."
+
+Hybrid:
+"Die Zusammenarbeit kombiniert Remote- und Vor-Ort-Termine."
 ## 5. Anzeigendetails
 
 Zugriff:
