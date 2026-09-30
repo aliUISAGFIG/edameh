@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useId, useRef, type ReactNode } from 'react';
 import { Dialog as Primitive } from 'radix-ui';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -17,23 +17,35 @@ export function Dialog({
   children: ReactNode;
   sheet?: boolean;
 }) {
+  const descriptionId = useId();
+  const opener = useRef<HTMLElement | null>(null);
   return (
     <Primitive.Root open={open} onOpenChange={onOpenChange}>
       <Primitive.Portal>
-        <Primitive.Overlay className="fixed inset-0 z-50 bg-slate-950/45 backdrop-blur-sm" />
+        <Primitive.Overlay className="dialog-overlay fixed inset-0 z-50 bg-slate-950/55" />
         <Primitive.Content
-          aria-describedby={description ? 'dialog-description' : undefined}
+          aria-describedby={description ? descriptionId : undefined}
+          onOpenAutoFocus={() => {
+            opener.current =
+              document.activeElement instanceof HTMLElement ? document.activeElement : null;
+          }}
+          onCloseAutoFocus={(event) => {
+            if (opener.current?.isConnected) {
+              event.preventDefault();
+              opener.current.focus();
+            }
+          }}
           className={cn(
-            'fixed z-50 max-h-[90dvh] overflow-y-auto border bg-card p-6 shadow-xl',
+            'dialog-content fixed z-50 max-h-[90dvh] overflow-y-auto overscroll-contain border bg-card p-6 shadow-xl',
             sheet
-              ? 'inset-y-0 right-0 w-[min(92vw,390px)] max-h-dvh'
+              ? 'dialog-sheet inset-y-0 right-0 w-[min(92vw,390px)] max-h-dvh'
               : 'left-1/2 top-1/2 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl',
           )}
         >
           <Primitive.Title className="pr-8 text-xl font-semibold">{title}</Primitive.Title>
           {description && (
             <Primitive.Description
-              id="dialog-description"
+              id={descriptionId}
               className="mt-3 text-sm text-muted-foreground"
             >
               {description}
@@ -41,7 +53,8 @@ export function Dialog({
           )}
           <Primitive.Close
             aria-label="Schließen"
-            className="absolute right-4 top-4 rounded-md p-1 hover:bg-muted"
+            title="Schließen"
+            className="absolute right-3 top-3 flex size-11 items-center justify-center rounded-lg hover:bg-muted"
           >
             <X size={18} />
           </Primitive.Close>

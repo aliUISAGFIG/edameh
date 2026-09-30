@@ -25,7 +25,7 @@ export function ProfilePage() {
         title={own ? 'Mein Profil' : 'Entwicklerprofil'}
         action={
           own ? (
-            <Button variant="outline" asChild>
+            <Button asChild>
               <Link to="/profil/bearbeiten">
                 <Pencil />
                 Profil bearbeiten
@@ -34,9 +34,9 @@ export function ProfilePage() {
           ) : undefined
         }
       />
-      <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
-        <article className="panel overflow-hidden">
-          <div className="h-24 border-b bg-gradient-to-r from-accent to-primary/10" />
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <article className="panel min-w-0 overflow-hidden">
+          <div className="h-20 border-b bg-accent" />
           <div className="px-6 pb-8 md:px-9">
             <div className="-mt-12 mb-5 inline-flex rounded-full border-4 border-card">
               <Avatar name={p.anzeigename} large />
@@ -61,7 +61,7 @@ export function ProfilePage() {
                 ].map(([Icon, value, label], i) => {
                   const Mark = Icon as typeof Code2;
                   return (
-                    <div key={i} className="rounded-lg bg-muted/50 p-4">
+                    <div key={i} className="py-2">
                       <Mark size={18} className="mb-3 text-primary" />
                       <p className="text-lg font-semibold">{value as string}</p>
                       <p className="text-xs text-muted-foreground">{label as string}</p>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
-import { Search, MessageSquare, RefreshCw } from 'lucide-react';
+import { Search, MessageSquare, RefreshCw, ArrowLeft } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useConversations } from '@/api/queries';
 import { Avatar, EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/shared/common';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { datum } from '@/lib/labels';
 import { cn } from '@/lib/utils';
 import { Conversation } from './Conversation';
 export function InboxPage() {
+  const client = useQueryClient();
   const { id } = useParams();
   const conversations = useConversations();
   const [term, setTerm] = useState('');
@@ -25,12 +27,29 @@ export function InboxPage() {
         title="Nachrichten"
         description="Hier werden aus ersten Kontakten gemeinsame Projekte."
         action={
-          <Button variant="outline" size="sm" onClick={() => void conversations.refetch()}>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={conversations.isFetching}
+            onClick={() => {
+              void conversations.refetch();
+              if (id) void client.invalidateQueries({ queryKey: ['nachrichten', Number(id)] });
+            }}
+          >
             <RefreshCw />
-            Aktualisieren
+            {conversations.isFetching ? 'Wird aktualisiert …' : 'Aktualisieren'}
           </Button>
         }
       />
+      {id && (
+        <Link
+          to="/nachrichten"
+          className="mb-4 inline-flex min-h-11 items-center gap-2 rounded-lg text-sm text-primary lg:hidden"
+        >
+          <ArrowLeft size={16} />
+          Zurück zum Postfach
+        </Link>
+      )}
       {conversations.data.length === 0 && !id ? (
         <EmptyState
           title="Dein Postfach wartet auf die erste Begegnung"
@@ -42,8 +61,13 @@ export function InboxPage() {
           }
         />
       ) : (
-        <div className="panel grid min-h-[620px] overflow-hidden lg:grid-cols-[320px_1fr]">
-          <aside className={cn('border-r', id ? 'hidden lg:block' : 'block')}>
+        <div className="panel grid h-[min(720px,80dvh)] min-h-[480px] overflow-hidden lg:grid-cols-[300px_minmax(0,1fr)]">
+          <aside
+            className={cn(
+              'min-h-0 min-w-0 overflow-y-auto lg:border-r',
+              id ? 'hidden lg:block' : 'block',
+            )}
+          >
             <div className="border-b p-5">
               <label className="relative block">
                 <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
@@ -95,13 +119,19 @@ export function InboxPage() {
                 </Link>
               ))}
               {filtered.length === 0 && (
-                <p className="p-6 text-center text-sm text-muted-foreground">
-                  Keine Unterhaltung gefunden.
-                </p>
+                <div className="p-6 text-center text-sm text-muted-foreground">
+                  <p>Keine Unterhaltung gefunden.</p>
+                  <Button variant="ghost" className="mt-2" onClick={() => setTerm('')}>
+                    Suche zurücksetzen
+                  </Button>
+                </div>
               )}
             </nav>
           </aside>
-          <section className={cn('min-w-0', !id ? 'hidden lg:flex' : 'flex')} aria-label="Gespräch">
+          <section
+            className={cn('min-h-0 min-w-0', !id ? 'hidden lg:flex' : 'flex')}
+            aria-label="Gespräch"
+          >
             {id ? (
               <Conversation key={id} id={Number(id)} preview={selected} />
             ) : (

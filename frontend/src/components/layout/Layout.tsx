@@ -84,6 +84,7 @@ export function Layout() {
     }
   }
   const links = [
+    ['/', 'Start'],
     ['/anzeigen', 'Anzeigen entdecken'],
     ...(me.data
       ? [
@@ -101,16 +102,17 @@ export function Layout() {
         Zum Inhalt springen
       </a>
       <header className="sticky top-0 z-40 border-b bg-card/95 backdrop-blur">
-        <div className="container-app flex h-[76px] items-center gap-8">
+        <div className="container-app flex h-[72px] items-center gap-3 lg:gap-6">
           <Logo />
-          <nav aria-label="Hauptnavigation" className="hidden items-center gap-6 lg:flex">
+          <nav aria-label="Hauptnavigation" className="hidden items-center gap-5 lg:flex">
             {links.map(([href, label]) => (
               <NavLink
                 key={href}
                 to={href!}
+                end={href === '/'}
                 className={({ isActive }) =>
                   cn(
-                    'border-b-2 py-[26px] text-xs font-medium transition-colors',
+                    'border-b-2 py-6 text-sm font-medium transition-colors',
                     isActive
                       ? 'border-primary text-primary'
                       : 'border-transparent text-muted-foreground hover:text-foreground',
@@ -126,6 +128,7 @@ export function Layout() {
               variant="ghost"
               size="icon"
               aria-label={dark ? 'Helles Design aktivieren' : 'Dunkles Design aktivieren'}
+              title={dark ? 'Helles Design aktivieren' : 'Dunkles Design aktivieren'}
               onClick={() => setDark(!dark)}
             >
               {dark ? <Sun /> : <Moon />}
@@ -141,8 +144,9 @@ export function Layout() {
                 <DropdownMenu.Root>
                   <DropdownMenu.Trigger asChild>
                     <button
-                      className="hidden items-center gap-2 rounded-lg p-1.5 lg:flex"
+                      className="hidden min-h-11 items-center gap-2 rounded-lg p-1.5 lg:flex"
                       aria-label="Benutzermenü"
+                      title="Mein Profil und Abmelden"
                     >
                       <Avatar name={me.data.anzeigename} />
                       <ChevronDown size={14} />
@@ -152,7 +156,7 @@ export function Layout() {
                     <DropdownMenu.Content
                       align="end"
                       sideOffset={8}
-                      className="z-50 min-w-48 rounded-xl border bg-card p-2 shadow-lg"
+                      className="menu-content z-50 min-w-48 rounded-xl border bg-card p-2 shadow-lg"
                     >
                       <DropdownMenu.Label className="px-2 py-2 text-xs text-muted-foreground">
                         {me.data.anzeigename}
@@ -196,13 +200,29 @@ export function Layout() {
             <Button
               className="lg:hidden"
               variant="ghost"
-              size="icon"
+              size="sm"
               aria-label="Menü öffnen"
+              aria-expanded={mobile}
               onClick={() => setMobile(true)}
             >
               <Menu />
+              Menü
             </Button>
           </div>
+        </div>
+        <div className="container-app flex items-center justify-between gap-3 border-t py-2 sm:hidden">
+          <Link
+            to="/anzeigen"
+            className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground hover:text-primary"
+          >
+            Anzeigen
+          </Link>
+          <Button size="sm" asChild>
+            <Link to={me.data ? '/anzeigen/neu' : '/anmelden'}>
+              {me.data ? <Plus /> : <UserRound />}
+              {me.data ? 'Anzeige aufgeben' : 'Anmelden'}
+            </Link>
+          </Button>
         </div>
       </header>
       <Dialog sheet open={mobile} onOpenChange={setMobile} title="Navigation">
@@ -219,14 +239,20 @@ export function Layout() {
                   ['/registrieren', 'Registrieren'],
                 ]),
           ].map(([to, label]) => (
-            <Link
-              className="rounded-lg p-3 text-sm hover:bg-muted"
+            <NavLink
+              className={({ isActive }) =>
+                cn(
+                  'rounded-lg p-3 text-sm transition-colors hover:bg-muted',
+                  isActive && 'bg-accent font-semibold text-primary',
+                )
+              }
               key={to}
               to={to!}
+              end
               onClick={() => setMobile(false)}
             >
               {label}
-            </Link>
+            </NavLink>
           ))}
           {me.data && (
             <Button variant="outline" disabled={logoutPending} onClick={() => void logout()}>
@@ -238,7 +264,7 @@ export function Layout() {
       <main
         id="main-content"
         tabIndex={-1}
-        className="container-app flex-1 py-8 outline-none md:py-10"
+        className="container-app min-w-0 flex-1 py-6 outline-none md:py-10"
       >
         <motion.div
           key={location.pathname}

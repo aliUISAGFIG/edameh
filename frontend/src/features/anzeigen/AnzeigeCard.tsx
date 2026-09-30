@@ -51,25 +51,25 @@ export function AnzeigeCard({
       } as Record<string, typeof Code2>
     )[anzeige.kategorie.name] ?? Layers3;
   return (
-    <article className="panel group flex h-full flex-col p-5 transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-md md:p-6">
-      <div className="mb-5 flex items-center justify-between gap-2">
+    <article className="panel flex h-full min-w-0 flex-col p-5 transition-colors duration-200 focus-within:border-primary/60 md:p-6">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
           <span className="flex size-9 items-center justify-center rounded-lg bg-accent text-primary">
             <Icon size={18} />
           </span>
           {kategorieName(anzeige.kategorie.name)}
         </span>
-        {anzeige.status === 'CLOSED' ? (
+        {anzeige.status === 'CLOSED' || !name ? (
           <StatusBadge status={anzeige.status} />
         ) : (
           detail.data && (
-            <span className="text-[10px] font-medium text-primary">
+            <span className="text-xs font-medium text-primary">
               {anzeigentypen[detail.data.anzeigentyp]}
             </span>
           )
         )}
       </div>
-      <Link to={`/anzeigen/${anzeige.id}`} className="group/title">
+      <Link to={`/anzeigen/${anzeige.id}`} className="group/title rounded-sm">
         <h2 className="text-lg leading-snug font-semibold group-hover/title:text-primary">
           {anzeige.titel}
         </h2>
@@ -103,19 +103,20 @@ export function AnzeigeCard({
           {projektstaende[anzeige.projektstand]}
         </p>
       </div>
-      <div className="mt-5 flex items-center justify-between border-t pt-4">
-        <div className="flex items-center gap-2.5">
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+        <div className="flex min-w-0 items-center gap-2.5">
           {name && <Avatar name={name} />}
-          <div>
+          <div className="min-w-0">
             {name && <p className="text-xs font-medium">{name}</p>}
-            <p className="text-[11px] text-muted-foreground">{datum(anzeige.erstelltAm)}</p>
+            <p className="text-xs text-muted-foreground">{datum(anzeige.erstelltAm)}</p>
           </div>
         </div>
         <Link
           aria-label={`${anzeige.titel} öffnen`}
           to={`/anzeigen/${anzeige.id}`}
-          className="rounded-full bg-muted p-2 text-muted-foreground transition-colors group-hover:bg-accent group-hover:text-primary"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-xs font-medium text-primary transition-colors hover:bg-accent"
         >
+          Details
           <ArrowUpRight size={17} />
         </Link>
       </div>

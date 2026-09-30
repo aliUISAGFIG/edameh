@@ -1,4 +1,11 @@
-import { useId, useState, type ReactNode, type ComponentProps } from 'react';
+import {
+  cloneElement,
+  isValidElement,
+  useId,
+  useState,
+  type ReactNode,
+  type ComponentProps,
+} from 'react';
 import { Link, useLocation } from 'react-router';
 import { ArrowLeft, ArrowRight, Search, CircleAlert, Inbox } from 'lucide-react';
 import { ApiError } from '@/api/client';
@@ -37,7 +44,7 @@ export function PageHeader({
   action?: ReactNode;
 }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-5 border-b pb-7">
       {' '}
       <div>
         {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
@@ -60,7 +67,7 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="panel py-16 px-6 text-center">
+    <div className="rounded-xl border border-dashed bg-card/60 px-5 py-12 text-center sm:py-16">
       <Inbox className="mx-auto mb-4 size-10 text-primary" />
       <h2 className="text-xl font-semibold">{title}</h2>
       <p className="mx-auto mt-2 mb-5 max-w-md text-sm text-muted-foreground">{description}</p>
@@ -82,13 +89,13 @@ export function ErrorState({ error, retry }: { error: unknown; retry?: () => voi
             ? 'Diese Aktion ist gerade nicht möglich'
             : 'Das hat leider nicht geklappt';
   return (
-    <div role="alert" className="panel p-10 text-center">
+    <div role="alert" className="panel px-5 py-10 text-center">
       <CircleAlert className="mx-auto mb-4 text-destructive" />
       <h2 className="text-xl font-semibold">{title}</h2>
       <p className="mt-3 mb-6 text-sm text-muted-foreground">
         {error instanceof Error ? error.message : 'Bitte versuche es noch einmal.'}
       </p>
-      <div className="flex justify-center gap-3">
+      <div className="flex flex-wrap justify-center gap-3">
         {status === 401 ? (
           <Button asChild>
             <Link
@@ -164,18 +171,28 @@ export function Field({
   children: ReactNode;
   id: string;
 }) {
+  const control = isValidElement<ComponentProps<'input'>>(children)
+    ? cloneElement(children, {
+        'aria-invalid': !!error,
+        'aria-describedby': error ? `${id}-error` : hint ? `${id}-hint` : undefined,
+      })
+    : children;
   return (
     <div>
       <label htmlFor={id} className="label">
         {label}
       </label>
-      {children}
+      {control}
       {error ? (
         <p id={`${id}-error`} role="alert" className="mt-1.5 text-xs text-destructive">
           {error}
         </p>
       ) : (
-        hint && <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>
+        hint && (
+          <p id={`${id}-hint`} className="mt-1.5 text-xs text-muted-foreground">
+            {hint}
+          </p>
+        )
       )}
     </div>
   );
@@ -203,7 +220,7 @@ export function MultiSelect({
       <legend className="label">Technologien</legend>
       <div className="rounded-lg border bg-card p-3">
         <div className="relative">
-          <Search className="absolute left-2 top-2.5 size-4 text-muted-foreground" />
+          <Search className="absolute left-2 top-3.5 size-4 text-muted-foreground" />
           <Input
             aria-label="Technologien suchen"
             placeholder="Technologie suchen …"
@@ -219,7 +236,7 @@ export function MultiSelect({
               <label
                 key={t.id}
                 className={cn(
-                  'inline-flex cursor-pointer items-center gap-2 rounded-md border px-2.5 py-1.5 text-xs',
+                  'inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md border px-2.5 py-2 text-xs transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50',
                   value.includes(t.id)
                     ? 'border-primary/40 bg-accent text-primary'
                     : 'hover:bg-muted',
@@ -235,7 +252,8 @@ export function MultiSelect({
                     )
                   }
                   aria-describedby={error ? id : undefined}
-                  className="accent-primary"
+                  aria-invalid={!!error}
+                  className="size-4 accent-primary"
                 />
                 {t.name}
               </label>
@@ -247,6 +265,7 @@ export function MultiSelect({
       </div>
       <p
         id={id}
+        role={error ? 'alert' : undefined}
         className={cn('mt-1.5 text-xs', error ? 'text-destructive' : 'text-muted-foreground')}
       >
         {error ?? `${value.length} von ${max} ausgewählt`}

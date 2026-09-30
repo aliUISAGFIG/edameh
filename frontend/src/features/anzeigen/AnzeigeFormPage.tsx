@@ -106,11 +106,11 @@ function AnzeigeEditor({ existing }: { existing?: Anzeige }) {
       </Link>
       <PageHeader
         eyebrow={existing ? 'Deine Anzeige' : 'Aus einer Idee wird ein Anfang'}
-        title={existing ? 'Anzeige bearbeiten' : 'Finde Menschen für dein Projekt.'}
+        title={existing ? 'Anzeige bearbeiten' : 'Anzeige aufgeben'}
         description="Beschreibe, was du vorhast und wobei du Unterstützung suchst."
       />
-      <div className="grid gap-7 lg:grid-cols-[1fr_290px]">
-        <form noValidate onSubmit={form.handleSubmit(submit)} className="space-y-5">
+      <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_270px]">
+        <form noValidate onSubmit={form.handleSubmit(submit)} className="min-w-0 space-y-5">
           <section className="panel space-y-5 p-6">
             <SectionTitle number="01" title="Dein Gesuch" />
             <fieldset>
@@ -132,7 +132,12 @@ function AnzeigeEditor({ existing }: { existing?: Anzeige }) {
                 ))}
               </div>
             </fieldset>
-            <Field id="titel" label="Titel" error={errors.titel?.message}>
+            <Field
+              id="titel"
+              label="Titel"
+              hint="5–120 Zeichen. Sag kurz, worum es geht."
+              error={errors.titel?.message}
+            >
               <Input
                 id="titel"
                 placeholder="z. B. React-Frontend für eine Lernplattform"
@@ -253,7 +258,7 @@ function AnzeigeEditor({ existing }: { existing?: Anzeige }) {
               {errors.root.message}
             </p>
           )}
-          <div className="flex justify-end gap-3">
+          <div className="form-actions">
             <Button variant="outline" asChild>
               <Link to={existing ? `/anzeigen/${existing.id}` : '/anzeigen'}>Abbrechen</Link>
             </Button>

@@ -11,6 +11,7 @@
 - Die initiale Datenbankstruktur wurde mit `V1__initial_schema.sql` erstellt.
 - Die erste Flyway-Migration wurde erfolgreich ausgeführt.
 - Unter `frontend/` ist eine React-/TypeScript-SPA mit Vite, deutscher Oberfläche, responsiven Ansichten und hellem/dunklem Design implementiert.
+- Kontrollierte Frontend-Designüberarbeitung am 30.09.2026 umgesetzt; Browser-Abnahme nach verweigerter lokaler Browserfreigabe noch offen. Umfang und Prüfgrenzen: `docs/design/frontend-review.md`.
 - Das Frontend arbeitet derzeit mit einer separaten MSW-Mock-API; die fachlichen Backend-Endpunkte sind weiterhin noch nicht implementiert.
 - `docs/design/api-contract.md` bleibt die verbindliche API-Quelle. Die reale Backend-Anbindung erfolgt später Feature für Feature über dieselbe zentrale HTTP-Schicht (Session und CSRF).
 
@@ -341,6 +342,16 @@ Neue wichtige Entscheidungen sollen hier dokumentiert werden, sobald sie währen
 
 
 \## Änderungsprotokoll
+
+\### 2026-09-30 – Kontrollierte Frontend-Designüberarbeitung
+
+- Vorhandene Komponenten und Architektur erhalten; Start und Anzeigenliste gezielter gewichtet, Navigation und mobile Aktionen lesbarer gestaltet, wiederholte dekorative Flächen reduziert.
+- Gemeinsame Design-Tokens, Feldkontraste, Fehler-/Hinweiszuordnung und Dialogfokus verbessert. Kurze CSS-Übergänge ergänzen das vorhandene Motion-Setup mit Reduced-Motion-Unterstützung.
+- Kontakt-/Verwaltungsaktionen erscheinen mobil vor langen Anzeigentexten. Postfach und Verlauf scrollen getrennt; explizites Aktualisieren lädt auch die Nachrichten des geöffneten Gesprächs.
+- API-Vertrag, API-Client, DTOs, MSW, Validierung, Backend und Migrationen unverändert. Keine neue Projekt-Dependency. Bereits vorhandene Backend-Arbeitsdateien nicht bearbeitet.
+- Prüfung: ESLint erfolgreich, TypeScript strict erfolgreich, 40/40 Tests erfolgreich, Produktionsbuild erfolgreich, Diff ohne Whitespace-Fehler.
+- Visuelle Desktop-/Mobile-Abnahme ist offen: Browserzugriff auf die lokale Vorschau wurde abgelehnt. Nächster Designschritt ist die Browserprüfung beider Themes und der dokumentierten Größen. Details: `docs/design/frontend-review.md`.
+- Bei der Prüfung fiel die vorhandene Abweichung `arbeitsweise` im eigenen Profil gegenüber `arbeitsweisen` im API-Vertrag auf. Keine Shape-Änderung im Designauftrag; vor Backend-Anbindung separat abstimmen. Der nächste fachliche Backend-Schritt bleibt Benutzer/Registrierung.
 
 \### 2026-09-29 – Frontend mit Mock-API
 

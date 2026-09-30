@@ -1,25 +1,24 @@
 import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Link, useLocation, useSearchParams } from 'react-router';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import {
-  ArrowUpRight,
-  ArrowRight,
-  Search,
-  SlidersHorizontal,
-  X,
-  Code2,
-  Braces,
-} from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Search, SlidersHorizontal, X, Plus } from 'lucide-react';
 import { api } from '@/api/endpoints';
 import { useCategories, useMe, useTechnologies } from '@/api/queries';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
-import { EmptyState, ErrorState, Pagination, Skeleton } from '@/components/shared/common';
+import {
+  EmptyState,
+  ErrorState,
+  PageHeader,
+  Pagination,
+  Skeleton,
+} from '@/components/shared/common';
 import { arbeitsweisen, kategorieName } from '@/lib/labels';
 import { AnzeigeCard } from './AnzeigeCard';
 import { FilterPanel } from './FilterPanel';
 
 export function DiscoverPage() {
+  const isHome = useLocation().pathname === '/';
   const [params, setParams] = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const me = useMe();
@@ -63,67 +62,71 @@ export function DiscoverPage() {
   }
   return (
     <>
-      <section className="relative mb-9 overflow-hidden rounded-2xl border border-primary/10 bg-gradient-to-br from-accent via-card to-card px-6 py-9 md:px-10 md:py-12">
-        <div className="relative z-10 max-w-2xl">
-          <p className="eyebrow mb-4 flex items-center gap-2">
-            <span className="size-1.5 rounded-full bg-primary" />
-            Für Menschen, die gerne bauen
-          </p>
-          <h1 className="text-[2.5rem] leading-[1.12] font-semibold tracking-[-.055em] md:text-[3.65rem]">
-            Gute Ideen verdienen
-            <br />
-            <span className="text-primary">ein gutes Team.</span>
-          </h1>
-          <p className="mt-5 max-w-lg text-sm text-muted-foreground md:text-base">
-            Finde dein nächstes Softwareprojekt. Teile dein Wissen, lerne Neues und baue gemeinsam
-            weiter.
-          </p>
-          <div className="mt-7 flex flex-wrap gap-3">
+      {isHome ? (
+        <section className="mb-9 border-b pb-8 md:pb-10">
+          <div className="max-w-3xl">
+            <p className="eyebrow mb-4 flex items-center gap-2">
+              <span className="size-1.5 rounded-full bg-primary" />
+              Gemeinsam Software entwickeln
+            </p>
+            <h1 className="text-[2rem] leading-[1.15] font-semibold tracking-[-.045em] sm:text-5xl">
+              Gute Ideen verdienen
+              <br />
+              <span className="text-primary">ein gutes Team.</span>
+            </h1>
+            <p className="mt-4 max-w-xl text-sm text-muted-foreground md:text-base">
+              Edameh verbindet Menschen für Softwareprojekte. Finde ein Projekt zum Mitmachen oder
+              Unterstützung für deine eigene Idee.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild>
+                <a href="#entdecken">
+                  Anzeigen entdecken
+                  <ArrowRight />
+                </a>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/anzeigen/neu">
+                  Anzeige aufgeben
+                  <ArrowUpRight />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <PageHeader
+          eyebrow="Projekte & Menschen"
+          title="Anzeigen entdecken"
+          description="Finde ein Softwareprojekt, das zu deinen Interessen und Technologien passt."
+          action={
             <Button asChild>
-              <a href="#entdecken">
-                Anzeigen entdecken
-                <ArrowRight />
-              </a>
-            </Button>
-            <Button variant="outline" asChild>
               <Link to="/anzeigen/neu">
+                <Plus />
                 Anzeige aufgeben
-                <ArrowUpRight />
               </Link>
             </Button>
+          }
+        />
+      )}
+      <section
+        id="entdecken"
+        className="scroll-mt-40 sm:scroll-mt-24"
+        aria-label="Anzeigen suchen und filtern"
+      >
+        {isHome && (
+          <div className="mb-6 flex items-end justify-between">
+            <div>
+              <p className="eyebrow mb-2">Entdecken & mitgestalten</p>
+              <h2 className="text-2xl font-semibold">Hier beginnt dein nächstes Projekt.</h2>
+            </div>
+            <span className="hidden text-xs text-muted-foreground sm:block">
+              Offene Ideen. Neue Perspektiven.
+            </span>
           </div>
-        </div>
-        <div
-          aria-hidden
-          className="absolute right-12 top-12 hidden h-60 w-64 rotate-[-8deg] xl:block"
-        >
-          <div className="absolute inset-5 rounded-full border border-primary/20" />
-          <div className="absolute right-0 top-3 flex size-24 items-center justify-center rounded-2xl border border-primary/10 bg-card/90 text-primary shadow-lg">
-            <Code2 size={44} />
-          </div>
-          <div className="absolute bottom-3 left-0 flex size-24 items-center justify-center rounded-2xl border border-primary/10 bg-card/90 text-primary shadow-lg">
-            <Braces size={40} />
-          </div>
-          <span className="absolute left-5 top-3 font-mono text-xs text-primary/50">
-            &lt;zusammen /&gt;
-          </span>
-          <div className="absolute bottom-9 right-0 rounded-full bg-primary/15 px-4 py-2 text-xs text-primary">
-            Idee → Projekt
-          </div>
-        </div>
-      </section>
-      <section id="entdecken" className="scroll-mt-24">
-        <div className="mb-6 flex items-end justify-between">
-          <div>
-            <p className="eyebrow mb-2">Entdecken & mitgestalten</p>
-            <h2 className="text-2xl font-semibold">Hier beginnt dein nächstes Projekt.</h2>
-          </div>
-          <span className="hidden text-xs text-muted-foreground sm:block">
-            Offene Ideen. Neue Perspektiven.
-          </span>
-        </div>
-        <div className="mb-6 flex gap-3">
-          <div className="relative flex-1">
+        )}
+        <div className="mb-6 flex flex-wrap gap-3">
+          <div className="relative min-w-48 flex-1">
             <Search className="absolute left-4 top-3.5 size-5 text-muted-foreground" />
             <input
               aria-label="Anzeigen suchen"
@@ -139,11 +142,11 @@ export function DiscoverPage() {
             Filter{active.length > 0 && ` (${active.length})`}
           </Button>
         </div>
-        <div className="grid items-start gap-7 lg:grid-cols-[230px_1fr]">
-          <aside className="panel hidden p-5 lg:block">
+        <div className="grid items-start gap-7 lg:grid-cols-[248px_minmax(0,1fr)]">
+          <aside className="hidden border-r pr-6 lg:block" aria-label="Anzeigen filtern">
             <FilterPanel params={params} update={update} reset={reset} />
           </aside>
-          <div>
+          <div className="min-w-0">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <p aria-live="polite" className="text-sm text-muted-foreground">
                 {ads.data
@@ -167,10 +170,10 @@ export function DiscoverPage() {
                   <button
                     key={k}
                     onClick={() => update(k, '')}
-                    className="badge border-primary/20 bg-accent text-primary"
+                    className="badge min-h-11 max-w-full border-primary/20 bg-accent text-primary"
                     aria-label={`Filter ${chip(k)} entfernen`}
                   >
-                    {chip(k)}
+                    <span className="break-all text-left">{chip(k)}</span>
                     <X size={12} />
                   </button>
                 ))}
@@ -191,7 +194,7 @@ export function DiscoverPage() {
                 }
               />
             ) : (
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 {ads.data.content.map((a) => (
                   <AnzeigeCard key={a.id} anzeige={a} name={a.anzeigename} />
                 ))}

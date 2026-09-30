@@ -47,9 +47,9 @@ export function DetailPage() {
         <ArrowLeft size={16} />
         Zurück zu den Anzeigen
       </Link>
-      <div className="grid gap-7 lg:grid-cols-[1fr_320px]">
-        <article>
-          <div className="panel p-6 md:p-9">
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <article className="contents">
+          <div className="panel order-0 min-w-0 p-6 md:p-8 lg:col-start-1 lg:row-start-1">
             <div className="mb-5 flex flex-wrap items-center gap-3">
               <span className="badge bg-accent text-primary">{anzeigentypen[a.anzeigentyp]}</span>
               <StatusBadge status={a.status} />
@@ -82,15 +82,94 @@ export function DetailPage() {
               ))}
             </div>
           </div>
-          <section className="panel mt-5 p-6 md:p-9">
+          <aside className="order-1 min-w-0 space-y-5 lg:sticky lg:top-24 lg:col-start-2 lg:row-start-1 lg:row-span-3">
+            <div className="panel p-6">
+              <p className="eyebrow mb-5">Erstellt von</p>
+              <div className="flex items-center gap-3">
+                <Avatar name={a.eigentuemer.anzeigename} />
+                <div>
+                  <p className="font-semibold">{a.eigentuemer.anzeigename}</p>
+                  <Link className="link text-xs" to={`/profile/${a.eigentuemer.id}`}>
+                    Profil ansehen
+                  </Link>
+                </div>
+              </div>
+              <div className="mt-6 border-t pt-6">
+                {own ? (
+                  <>
+                    <h2 className="mb-3 font-semibold">Deine Anzeige</h2>
+                    <OwnActions id={a.id} status={a.status} redirect />
+                  </>
+                ) : a.status === 'CLOSED' ? (
+                  <>
+                    <h2 className="font-semibold">Diese Anzeige ist geschlossen</h2>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Neue Anfragen sind nicht mehr möglich.
+                    </p>
+                    {existing && (
+                      <Button asChild className="mt-4 w-full">
+                        <Link to={`/nachrichten/${existing.id}`}>Unterhaltung öffnen</Link>
+                      </Button>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <h2 className="font-semibold">Zusammen weiterbauen?</h2>
+                    <p className="mt-2 mb-4 text-sm text-muted-foreground">
+                      Erzähl kurz, was dich interessiert und wie du mithelfen möchtest.
+                    </p>
+                    {useMockApi && me.data && !existing && (
+                      <p className="mb-3 text-xs text-muted-foreground">
+                        Neue Unterhaltungen sind in dieser Vorschau noch nicht verfügbar. Bestehende
+                        Gespräche findest du unter Nachrichten.
+                      </p>
+                    )}
+                    {me.data ? (
+                      <Button
+                        className="w-full"
+                        disabled={start.isPending || (useMockApi && !existing)}
+                        onClick={() => start.mutate()}
+                      >
+                        <MessageSquare />
+                        {start.isPending ? 'Wird geöffnet …' : 'Nachricht senden'}
+                      </Button>
+                    ) : (
+                      <>
+                        <Button asChild className="w-full">
+                          <Link to={`/anmelden?weiter=${encodeURIComponent(`/anzeigen/${a.id}`)}`}>
+                            Jetzt anmelden
+                            <ArrowUpRight />
+                          </Link>
+                        </Button>
+                        <Link
+                          className="link mt-3 block text-center text-sm"
+                          to={`/registrieren?weiter=${encodeURIComponent(`/anzeigen/${a.id}`)}`}
+                        >
+                          Registrieren
+                        </Link>
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="border-l-2 border-primary/30 px-5 py-2">
+              <h3 className="font-semibold text-primary">Ein gutes Gespräch ist ein Anfang.</h3>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Bleib konkret und offen. Gemeinsam entscheidet ihr, wie eure Zusammenarbeit aussehen
+                soll.
+              </p>
+            </div>
+          </aside>
+          <section className="order-2 min-w-0 px-1 py-2 lg:col-start-1 lg:row-start-2">
             <h2 className="mb-5 text-xl font-semibold">Über das Projekt</h2>
-            <p className="whitespace-pre-wrap text-sm leading-7 text-muted-foreground">
+            <p className="max-w-prose whitespace-pre-wrap text-base leading-8 text-muted-foreground">
               {a.beschreibung}
             </p>
           </section>
-          <section className="panel mt-5 p-6 md:p-9">
+          <section className="order-3 min-w-0 border-t px-1 pt-6 lg:col-start-1 lg:row-start-3">
             <h2 className="mb-5 text-xl font-semibold">Auf einen Blick</h2>
-            <dl className="grid grid-cols-2 gap-5 text-sm">
+            <dl className="grid gap-5 text-sm sm:grid-cols-2">
               {[
                 ['Projektstand', projektstaende[a.projektstand]],
                 ['Arbeitsweisen', a.arbeitsweisen.map((value) => arbeitsweisen[value]).join(', ')],
@@ -116,85 +195,6 @@ export function DetailPage() {
             )}
           </section>
         </article>
-        <aside className="space-y-5">
-          <div className="panel p-6">
-            <p className="eyebrow mb-5">Erstellt von</p>
-            <div className="flex items-center gap-3">
-              <Avatar name={a.eigentuemer.anzeigename} />
-              <div>
-                <p className="font-semibold">{a.eigentuemer.anzeigename}</p>
-                <Link className="link text-xs" to={`/profile/${a.eigentuemer.id}`}>
-                  Profil ansehen
-                </Link>
-              </div>
-            </div>
-            <div className="mt-6 border-t pt-6">
-              {own ? (
-                <>
-                  <h2 className="mb-3 font-semibold">Deine Anzeige</h2>
-                  <OwnActions id={a.id} status={a.status} redirect />
-                </>
-              ) : a.status === 'CLOSED' ? (
-                <>
-                  <h2 className="font-semibold">Diese Anzeige ist geschlossen</h2>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Neue Anfragen sind nicht mehr möglich.
-                  </p>
-                  {existing && (
-                    <Button asChild className="mt-4 w-full">
-                      <Link to={`/nachrichten/${existing.id}`}>Unterhaltung öffnen</Link>
-                    </Button>
-                  )}
-                </>
-              ) : (
-                <>
-                  <h2 className="font-semibold">Zusammen weiterbauen?</h2>
-                  <p className="mt-2 mb-4 text-sm text-muted-foreground">
-                    Erzähl kurz, was dich interessiert und wie du mithelfen möchtest.
-                  </p>
-                  {useMockApi && me.data && !existing && (
-                    <p className="mb-3 text-xs text-muted-foreground">
-                      Neue Unterhaltungen sind in dieser Vorschau noch nicht verfügbar. Bestehende
-                      Gespräche findest du unter Nachrichten.
-                    </p>
-                  )}
-                  {me.data ? (
-                    <Button
-                      className="w-full"
-                      disabled={start.isPending || (useMockApi && !existing)}
-                      onClick={() => start.mutate()}
-                    >
-                      <MessageSquare />
-                      {start.isPending ? 'Wird geöffnet …' : 'Nachricht senden'}
-                    </Button>
-                  ) : (
-                    <>
-                      <Button asChild className="w-full">
-                        <Link to={`/anmelden?weiter=${encodeURIComponent(`/anzeigen/${a.id}`)}`}>
-                          Jetzt anmelden
-                          <ArrowUpRight />
-                        </Link>
-                      </Button>
-                      <Link
-                        className="link mt-3 block text-center text-sm"
-                        to={`/registrieren?weiter=${encodeURIComponent(`/anzeigen/${a.id}`)}`}
-                      >
-                        Registrieren
-                      </Link>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-          <div className="rounded-xl border border-primary/15 bg-accent/60 p-6">
-            <h3 className="font-semibold text-primary">Ein gutes Gespräch ist ein Anfang.</h3>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Bleib konkret und offen. Gemeinsam entscheidet ihr, wie eure Zusammenarbeit aussehen
-              soll.
-            </p>
-          </div>
-        </aside>
       </div>
     </>
   );

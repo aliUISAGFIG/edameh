@@ -14,19 +14,19 @@ import type { Anmeldung, Registrierung } from '@/types/api';
 
 export function AuthPage({ register = false }: { register?: boolean }) {
   return (
-    <div className="grid overflow-hidden rounded-2xl border bg-card lg:grid-cols-2">
+    <div className="mx-auto grid max-w-5xl overflow-hidden rounded-2xl border bg-card lg:grid-cols-2">
       <aside className="relative hidden flex-col justify-between overflow-hidden bg-[#24203e] p-12 text-white lg:flex">
         <div>
           <p className="text-xs uppercase tracking-[.25em] text-violet-300">
             Ideen brauchen Menschen.
           </p>
-          <h1 className="mt-6 text-5xl font-semibold leading-tight">
+          <h2 className="mt-6 text-4xl font-semibold leading-tight">
             Dein nächstes
             <br />
             Projekt beginnt
             <br />
             <span className="text-violet-300">mit einem Hallo.</span>
-          </h1>
+          </h2>
           <p className="mt-6 max-w-sm text-sm text-slate-300">
             Finde Menschen, die deine Neugier teilen. Lerne voneinander und baue etwas, das bleibt.
           </p>
@@ -55,9 +55,9 @@ export function AuthPage({ register = false }: { register?: boolean }) {
         <p className="eyebrow mb-3">
           {register ? 'Dein erster Schritt' : 'Schön, dass du da bist'}
         </p>
-        <h2 className="text-3xl font-semibold">
-          {register ? 'Gemeinsam mehr schaffen' : 'Willkommen zurück'}
-        </h2>
+        <h1 className="text-3xl font-semibold">
+          {register ? 'Konto erstellen' : 'Willkommen zurück'}
+        </h1>
         <p className="mt-3 mb-8 text-sm text-muted-foreground">
           {register
             ? 'Erstelle dein Konto und finde dein nächstes Projekt.'
@@ -158,6 +158,13 @@ export function RegisterForm() {
           key={f.name}
           id={f.name}
           label={f.label}
+          hint={
+            f.name === 'passwort'
+              ? '8–100 Zeichen.'
+              : f.name === 'anzeigename'
+                ? '3–50 Zeichen. So sehen dich andere.'
+                : undefined
+          }
           error={form.formState.errors[f.name]?.message}
         >
           <Input

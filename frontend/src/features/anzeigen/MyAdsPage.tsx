@@ -48,8 +48,9 @@ export function MyAdsPage() {
           ].map(([v, l]) => (
             <button
               key={v}
+              aria-pressed={(params.get('status') ?? '') === v}
               className={cn(
-                'rounded-md px-4 py-2 text-sm',
+                'min-h-11 rounded-md px-4 py-2 text-sm transition-colors',
                 (params.get('status') ?? '') === v
                   ? 'bg-accent font-medium text-primary'
                   : 'text-muted-foreground',
@@ -83,12 +84,26 @@ export function MyAdsPage() {
         <ErrorState error={result.error} retry={() => void result.refetch()} />
       ) : result.data.content.length === 0 ? (
         <EmptyState
-          title="Hier ist Platz für deine nächste Idee"
-          description="Du hast in dieser Auswahl noch keine Anzeigen. Starte mit einer Idee und finde Menschen zum Mitmachen."
+          title={
+            params.get('status')
+              ? 'Keine Anzeigen in dieser Auswahl'
+              : 'Hier ist Platz für deine nächste Idee'
+          }
+          description={
+            params.get('status')
+              ? 'Wähle „Alle“, um deine anderen Anzeigen zu sehen.'
+              : 'Du hast noch keine Anzeigen. Starte mit einer Idee und finde Menschen zum Mitmachen.'
+          }
           action={
-            <Button asChild>
-              <Link to="/anzeigen/neu">Erste Anzeige aufgeben</Link>
-            </Button>
+            params.get('status') ? (
+              <Button variant="outline" onClick={() => setParams({})}>
+                Alle Anzeigen anzeigen
+              </Button>
+            ) : (
+              <Button asChild>
+                <Link to="/anzeigen/neu">Erste Anzeige aufgeben</Link>
+              </Button>
+            )
           }
         />
       ) : (

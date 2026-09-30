@@ -29,15 +29,17 @@
 }
 :root {
   color-scheme: light;
-  --background: #f7f8fc;
-  --foreground: #202335;
+  --background: #f8f9fc;
+  --foreground: #222536;
   --card: #fff;
   --primary: #6554db;
   --primary-foreground: #fff;
   --muted: #f0f1f7;
-  --muted-foreground: #667085;
+  --muted-foreground: #596579;
   --accent: #efecff;
-  --border: #e3e5ef;
+  --border: #dce0ea;
+  --input-border: #8791a5;
+  --destructive-foreground: #fff;
   --destructive: #bd2342;
 }
 .dark {
@@ -51,7 +53,9 @@
   --muted-foreground: #a8b0c5;
   --accent: #2b2646;
   --border: #33374b;
+  --input-border: #727d95;
   --destructive: #ff839d;
+  --destructive-foreground: #28101a;
 }
 @layer base {
   * {
@@ -59,6 +63,12 @@
   }
   body {
     @apply m-0 bg-background text-foreground font-sans antialiased;
+  }
+  :where(h1, h2, h3, p, dd) {
+    overflow-wrap: anywhere;
+  }
+  :where(input, textarea, select) {
+    scroll-margin-block: 7rem;
   }
   button,
   a,
@@ -88,10 +98,43 @@
     @apply mx-auto w-full max-w-[1280px] px-5 md:px-8;
   }
   .panel {
-    @apply rounded-xl border bg-card shadow-[0_3px_18px_-12px_rgba(25,28,55,0.16)];
+    @apply rounded-xl border bg-card;
   }
   .field {
-    @apply w-full rounded-lg border bg-card px-3 py-2.5 text-sm placeholder:text-muted-foreground disabled:opacity-60;
+    @apply min-h-11 min-w-0 w-full rounded-lg border bg-card px-3 py-2.5 text-base placeholder:text-muted-foreground disabled:opacity-60 sm:text-sm;
+    border-color: var(--input-border);
+    transition:
+      border-color 160ms ease,
+      box-shadow 160ms ease;
+  }
+  .field:hover:not(:disabled) {
+    border-color: var(--primary);
+  }
+  .field[aria-invalid='true'] {
+    border-color: var(--destructive);
+  }
+  .form-actions {
+    @apply flex flex-col gap-3 border-t pt-5 sm:flex-row sm:justify-end;
+  }
+  .dialog-overlay[data-state='open'] {
+    animation: fade-in 180ms ease-out;
+  }
+  .dialog-overlay[data-state='closed'] {
+    animation: fade-in 150ms ease-in reverse;
+  }
+  .dialog-content[data-state='open'],
+  .menu-content[data-state='open'] {
+    animation: fade-in 180ms ease-out;
+  }
+  .dialog-content[data-state='closed'],
+  .menu-content[data-state='closed'] {
+    animation: fade-in 150ms ease-in reverse;
+  }
+  .dialog-sheet[data-state='open'] {
+    animation: sheet-in 220ms ease-out;
+  }
+  .dialog-sheet[data-state='closed'] {
+    animation: sheet-in 180ms ease-in reverse;
   }
   .label {
     @apply mb-2 block text-sm font-medium;
@@ -104,6 +147,24 @@
   }
   .link {
     @apply text-primary hover:underline underline-offset-4;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sheet-in {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 @media (prefers-reduced-motion: reduce) {

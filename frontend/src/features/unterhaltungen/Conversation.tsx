@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, ArrowUpRight, Check, CheckCheck, Send } from 'lucide-react';
+import { ArrowUpRight, Check, CheckCheck, Send } from 'lucide-react';
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
 import { api } from '@/api/endpoints';
@@ -63,7 +63,7 @@ export function Conversation({ id, preview }: { id: number; preview?: Unterhaltu
   }
   if (access.error || messages.error)
     return (
-      <div className="w-full p-5">
+      <div className="w-full overflow-y-auto p-5">
         <ErrorState
           error={access.error ?? messages.error}
           retry={() => {
@@ -75,24 +75,17 @@ export function Conversation({ id, preview }: { id: number; preview?: Unterhaltu
     );
   if (access.isPending || messages.isPending)
     return (
-      <div className="w-full p-5">
+      <div className="w-full overflow-y-auto p-5">
         <Skeleton />
       </div>
     );
   return (
-    <div className="flex w-full flex-col">
-      <header className="flex items-center gap-3 border-b p-5">
-        <Link
-          to="/nachrichten"
-          className="rounded-md p-1 lg:hidden"
-          aria-label="Zurück zum Postfach"
-        >
-          <ArrowLeft size={20} />
-        </Link>
+    <div className="flex min-h-0 w-full flex-col">
+      <header className="flex shrink-0 flex-wrap items-center gap-3 border-b p-4 sm:p-5">
         {preview && (
           <>
             <Avatar name={preview.anderePerson.anzeigename} />
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <Link
                 className="text-sm font-semibold hover:text-primary"
                 to={`/profile/${preview.anderePerson.id}`}
@@ -104,15 +97,18 @@ export function Conversation({ id, preview }: { id: number; preview?: Unterhaltu
             <Link
               to={`/anzeigen/${preview.anzeige.id}`}
               aria-label="Anzeige ansehen"
-              className="ml-auto rounded-lg border p-2 text-primary"
+              className="ml-auto inline-flex min-h-11 items-center gap-2 rounded-lg border px-3 text-xs text-primary hover:bg-accent"
             >
+              Anzeige
               <ArrowUpRight size={17} />
             </Link>
           </>
         )}
       </header>
       <div
-        className="flex max-h-[58dvh] min-h-80 flex-1 flex-col gap-5 overflow-y-auto bg-background/50 p-5 md:p-7"
+        className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain bg-background/50 p-4 md:p-7"
+        tabIndex={0}
+        role="region"
         aria-label="Nachrichtenverlauf"
       >
         {messages.data?.content.map((m) => {
@@ -121,6 +117,7 @@ export function Conversation({ id, preview }: { id: number; preview?: Unterhaltu
             <motion.article
               initial={{ opacity: 0, y: 3 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18 }}
               key={m.id}
               className={cn('max-w-[88%] sm:max-w-[78%]', own ? 'ml-auto' : 'mr-auto')}
             >
@@ -171,30 +168,32 @@ export function Conversation({ id, preview }: { id: number; preview?: Unterhaltu
           Lesestatus konnte nicht aktualisiert werden. Erneut versuchen.
         </button>
       )}
-      <form noValidate onSubmit={form.handleSubmit(submit)} className="border-t p-4">
+      <form noValidate onSubmit={form.handleSubmit(submit)} className="shrink-0 border-t p-4">
         <label htmlFor="inhalt" className="sr-only">
           Nachricht
         </label>
-        <div className="flex items-end gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <textarea
             id="inhalt"
             rows={2}
             maxLength={2000}
             placeholder="Schreib eine Nachricht …"
-            className="field min-h-16 flex-1 resize-y"
-            aria-describedby="inhalt-error"
+            className="field min-h-16 max-h-40 flex-1 resize-y"
+            aria-invalid={!!form.formState.errors.inhalt}
+            aria-describedby={
+              form.formState.errors.inhalt || form.formState.errors.root
+                ? 'inhalt-error'
+                : 'inhalt-hint'
+            }
             {...form.register('inhalt')}
           />
           <Button
             aria-label={form.formState.isSubmitting ? 'Wird gesendet …' : 'Senden'}
             disabled={form.formState.isSubmitting}
-            className="mb-0.5"
+            className="mb-0.5 self-end"
           >
             <Send />
-            <span className="hidden sm:inline">
-              {form.formState.isSubmitting ? 'Wird gesendet …' : 'Senden'}
-            </span>
-            <span className="sr-only sm:hidden">Senden</span>
+            <span>{form.formState.isSubmitting ? 'Wird gesendet …' : 'Senden'}</span>
           </Button>
         </div>
         {(form.formState.errors.inhalt || form.formState.errors.root) && (
@@ -202,7 +201,9 @@ export function Conversation({ id, preview }: { id: number; preview?: Unterhaltu
             {form.formState.errors.inhalt?.message ?? form.formState.errors.root?.message}
           </p>
         )}
-        <p className="mt-2 text-[10px] text-muted-foreground">Nur Text · maximal 2000 Zeichen</p>
+        <p id="inhalt-hint" className="mt-2 text-xs text-muted-foreground">
+          Nur Text · maximal 2000 Zeichen
+        </p>
       </form>
     </div>
   );

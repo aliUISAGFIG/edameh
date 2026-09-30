@@ -68,7 +68,7 @@ export function OwnActions({
             : 'Die Anzeige verschwindet aus der öffentlichen Liste. Bestehende Unterhaltungen bleiben nutzbar.'
         }
       >
-        <div className="flex justify-end gap-3">
+        <div className="form-actions">
           <Button variant="outline" disabled={mutation.isPending} onClick={() => setAction(null)}>
             Abbrechen
           </Button>

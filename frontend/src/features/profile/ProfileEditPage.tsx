@@ -67,7 +67,12 @@ function Editor({ profile }: { profile: EigenesProfil }) {
         description="Erzähle etwas über dich und die Technologien, mit denen du gerne arbeitest."
       />
       <form noValidate className="panel space-y-6 p-6 md:p-8" onSubmit={form.handleSubmit(submit)}>
-        <Field label="Anzeigename" id="anzeigename" error={errors.anzeigename?.message}>
+        <Field
+          label="Anzeigename"
+          id="anzeigename"
+          hint="3–50 Zeichen. So sehen dich andere."
+          error={errors.anzeigename?.message}
+        >
           <Input
             id="anzeigename"
             maxLength={50}
@@ -75,7 +80,12 @@ function Editor({ profile }: { profile: EigenesProfil }) {
             {...form.register('anzeigename')}
           />
         </Field>
-        <Field label="Über mich" id="ueberMich" error={errors.ueberMich?.message}>
+        <Field
+          label="Über mich"
+          id="ueberMich"
+          hint="Optional · maximal 1000 Zeichen."
+          error={errors.ueberMich?.message}
+        >
           <textarea
             id="ueberMich"
             className="field"
@@ -136,7 +146,7 @@ function Editor({ profile }: { profile: EigenesProfil }) {
             {errors.root.message}
           </p>
         )}
-        <div className="flex justify-end gap-3 border-t pt-5">
+        <div className="form-actions">
           <Button asChild variant="outline">
             <Link to="/profil">Abbrechen</Link>
           </Button>
