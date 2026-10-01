@@ -8,7 +8,6 @@ public class EdamehApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(EdamehApplication.class, args);
-		System.out.println("---------");
 	}
 
 }

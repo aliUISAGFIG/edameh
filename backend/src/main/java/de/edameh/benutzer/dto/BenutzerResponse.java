@@ -1,4 +1,4 @@
 package de.edameh.benutzer.dto;
 
-public record BenutzerResponse() {
+public record BenutzerResponse(Long id, String eMail, String anzeigename) {
 }
