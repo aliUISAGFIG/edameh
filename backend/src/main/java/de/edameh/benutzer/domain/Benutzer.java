@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @Table(name = "benutzer")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Bentuzer {
+public class Benutzer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "e_mail" , nullable = false , unique = true , length = 255)
+    @Column(name = "e_mail" , nullable = false , unique = true , length = 254)
     private String eMail;
 
     @Column(name = "passwort_hash" , nullable = false , length = 255)
@@ -32,7 +32,7 @@ public class Bentuzer {
     @Column(name = "aktualisiert_am" , nullable = false)
     private LocalDateTime aktualisiertAm;
 
-    public Bentuzer(String eMail, String passwortHash, String anzeigename) {
+    public Benutzer(String eMail, String passwortHash, String anzeigename) {
         this.eMail = eMail;
         this.passwortHash = passwortHash;
         this.anzeigename = anzeigename;
@@ -40,12 +40,14 @@ public class Bentuzer {
 
     @PrePersist
     void vorDemSpeichern(){
-
+    LocalDateTime jetzt = LocalDateTime.now();
+    this.aktualisiertAm = jetzt;
+    this.erstelltAm = jetzt;
     }
 
     @PreUpdate
     void vorDemAktualisieren(){
-
+    this.aktualisiertAm = LocalDateTime.now();
     }
 
 }

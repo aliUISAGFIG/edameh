@@ -6,19 +6,19 @@ Dieses Dokument ist die **verbindliche Source of Truth** für die REST-API des M
 
 **Basis-Pfad:** `/api`
 
----
+\---
 
-## 1. Gemeinsame Regeln
+## 1\. Gemeinsame Regeln
 
 ### 1.1 Authentifizierung
 
 Das MVP verwendet serverseitige Sessions.
 
-- Session-Cookie: `JSESSIONID`
-- `HttpOnly`: Ja
-- `Secure`: Ja in Produktion
-- `SameSite`: `Lax`
-- Frontend-Requests verwenden `credentials: "include"`.
+* Session-Cookie: `JSESSIONID`
+* `HttpOnly`: Ja
+* `Secure`: Ja in Produktion
+* `SameSite`: `Lax`
+* Frontend-Requests verwenden `credentials: "include"`.
 
 JWT ist im MVP nicht vorgesehen.
 
@@ -62,7 +62,7 @@ Alle API-Fehler folgen grundsätzlich diesem Format:
 {
   "timestamp": "2026-09-27T18:30:00Z",
   "status": 400,
-  "code": "VALIDATION_ERROR",
+  "code": "VALIDATION\\\\\\\_ERROR",
   "message": "Die Eingabedaten sind ungültig.",
   "path": "/api/anzeigen",
   "fieldErrors": {
@@ -75,64 +75,64 @@ Alle API-Fehler folgen grundsätzlich diesem Format:
 
 Typische Codes:
 
-- `VALIDATION_ERROR`
-- `UNAUTHORIZED`
-- `FORBIDDEN`
-- `NOT_FOUND`
-- `CONFLICT`
-- `EMAIL_ALREADY_EXISTS`
-- `INVALID_CREDENTIALS`
-- `ADVERTISEMENT_CLOSED`
+* `VALIDATION\\\\\\\_ERROR`
+* `UNAUTHORIZED`
+* `FORBIDDEN`
+* `NOT\\\\\\\_FOUND`
+* `CONFLICT`
+* `EMAIL\\\\\\\_ALREADY\\\\\\\_EXISTS`
+* `INVALID\\\\\\\_CREDENTIALS`
+* `ADVERTISEMENT\\\\\\\_CLOSED`
 
----
+\---
 
-## 2. Validierungsgrenzen
+## 2\. Validierungsgrenzen
 
-| Feld | Regel |
-|---|---|
-| eMail | gültige E-Mail, max. 254 Zeichen |
-| anzeigename | 3–50 Zeichen |
-| passwort | 8–100 Zeichen |
-| ueberMich | max. 1000 Zeichen |
-| standort | max. 120 Zeichen |
-| githubLink / linkedinLink | gültige URL, max. 500 Zeichen |
-| titel | 5–120 Zeichen |
-| beschreibung | 20–5000 Zeichen |
-| projektlink | gültige URL, max. 500 Zeichen |
-| technologieIds pro Anzeige | 1–10 |
-| technologieIds pro Profil | 0–20 |
-| nachrichteninhalt | 1–2000 Zeichen |
-| suchbegriff | max. 100 Zeichen |
+|Feld|Regel|
+|-|-|
+|eMail|gültige E-Mail, max. 254 Zeichen|
+|anzeigename|3–50 Zeichen|
+|passwort|8–100 Zeichen|
+|ueberMich|max. 1000 Zeichen|
+|standort|max. 120 Zeichen|
+|githubLink / linkedinLink|gültige URL, max. 500 Zeichen|
+|titel|5–120 Zeichen|
+|beschreibung|20–5000 Zeichen|
+|projektlink|gültige URL, max. 500 Zeichen|
+|technologieIds pro Anzeige|1–10|
+|technologieIds pro Profil|0–20|
+|nachrichteninhalt|1–2000 Zeichen|
+|suchbegriff|max. 100 Zeichen|
 
----
+\---
 
-## 3. Feste Enum-Werte
+## 3\. Feste Enum-Werte
 
 ### Anzeigentyp
 
-- `UNTERSTUETZUNG_GESUCHT`
-- `PROJEKT_GESUCHT`
+* `UNTERSTUETZUNG\\\\\\\_GESUCHT`
+* `PROJEKT\\\\\\\_GESUCHT`
 
 ### Projektstand
 
-- `IDEE_PLANUNG`
-- `IN_ENTWICKLUNG`
-- `PROTOTYP_VORHANDEN`
+* `IDEE\\\\\\\_PLANUNG`
+* `IN\\\\\\\_ENTWICKLUNG`
+* `PROTOTYP\\\\\\\_VORHANDEN`
 
 ### Arbeitsweise
 
-- `REMOTE`
-- `VOR_ORT`
-- `HYBRID`
+* `REMOTE`
+* `VOR\\\\\\\_ORT`
+* `HYBRID`
 
 ### Anzeigenstatus
 
-- `ACTIVE`
-- `CLOSED`
+* `ACTIVE`
+* `CLOSED`
 
----
+\---
 
-## 4. Authentifizierung
+## 4\. Authentifizierung
 
 ### Registrierung
 
@@ -163,7 +163,7 @@ Nach erfolgreicher Registrierung wird der Benutzer automatisch angemeldet und ei
 
 **Fehler:** `400`, `409`
 
----
+\---
 
 ### Anmeldung
 
@@ -190,7 +190,7 @@ Nach erfolgreicher Registrierung wird der Benutzer automatisch angemeldet und ei
 
 **Fehler:** `400`, `401`
 
----
+\---
 
 ### Abmeldung
 
@@ -200,7 +200,7 @@ Nach erfolgreicher Registrierung wird der Benutzer automatisch angemeldet und ei
 
 **Erfolg:** `204 No Content`
 
----
+\---
 
 ### Aktuell angemeldeter Benutzer
 
@@ -218,9 +218,9 @@ Nach erfolgreicher Registrierung wird der Benutzer automatisch angemeldet und ei
 }
 ```
 
----
+\---
 
-## 5. Profile
+## 5\. Profile
 
 ### Eigenes Profil
 
@@ -236,13 +236,10 @@ Nach erfolgreicher Registrierung wird der Benutzer automatisch angemeldet und ei
   "anzeigename": "Ali",
   "ueberMich": "Ich interessiere mich für Backend- und Lernprojekte.",
   "standort": "Dortmund",
-  "arbeitsweisen": [
-    "REMOTE",
-    "VOR_ORT"
-  ],
+  "arbeitsweise": "REMOTE",
   "githubLink": "https://github.com/beispiel",
   "linkedinLink": null,
-  "technologien": [
+  "technologien": \\\\\\\[
     { "id": 1, "name": "Java" },
     { "id": 2, "name": "Spring Boot" }
   ],
@@ -256,7 +253,7 @@ Nach erfolgreicher Registrierung wird der Benutzer automatisch angemeldet und ei
 
 Die Statistikwerte werden berechnet und nicht als eigene Profilfelder gespeichert.
 
----
+\---
 
 ### Eigenes Profil bearbeiten
 
@@ -269,13 +266,10 @@ Die Statistikwerte werden berechnet und nicht als eigene Profilfelder gespeicher
   "anzeigename": "Ali",
   "ueberMich": "Ich interessiere mich für Backend- und Lernprojekte.",
   "standort": "Dortmund",
-  "arbeitsweisen": [
-    "REMOTE",
-    "VOR_ORT"
-  ],
+  "arbeitsweise": "REMOTE",
   "githubLink": "https://github.com/beispiel",
   "linkedinLink": null,
-  "technologieIds": [1, 2, 3]
+  "technologieIds": \\\\\\\[1, 2, 3]
 }
 ```
 
@@ -285,7 +279,7 @@ Die Statistikwerte werden berechnet und nicht als eigene Profilfelder gespeicher
 
 **Fehler:** `400`, `401`, `404`
 
----
+\---
 
 ### Öffentliches Profil
 
@@ -304,7 +298,7 @@ Die Statistikwerte werden berechnet und nicht als eigene Profilfelder gespeicher
   "arbeitsweise": "HYBRID",
   "githubLink": null,
   "linkedinLink": null,
-  "technologien": [
+  "technologien": \\\\\\\[
     { "id": 1, "name": "Java" }
   ]
 }
@@ -312,9 +306,9 @@ Die Statistikwerte werden berechnet und nicht als eigene Profilfelder gespeicher
 
 Die E-Mail-Adresse wird im öffentlichen Profil nicht ausgegeben.
 
----
+\---
 
-## 6. Auswahldaten
+## 6\. Auswahldaten
 
 ### Kategorien laden
 
@@ -323,14 +317,14 @@ Die E-Mail-Adresse wird im öffentlichen Profil nicht ausgegeben.
 **Authentifizierung erforderlich:** Nein
 
 ```json
-[
+\\\\\\\[
   { "id": 1, "name": "BACKEND" },
   { "id": 2, "name": "FRONTEND" },
-  { "id": 3, "name": "FULL_STACK" }
+  { "id": 3, "name": "FULL\\\\\\\_STACK" }
 ]
 ```
 
----
+\---
 
 ### Technologien laden
 
@@ -345,7 +339,7 @@ Optional:
 `suchbegriff` filtert Technologien case-insensitiv nach Name.
 
 ```json
-[
+\\\\\\\[
   { "id": 1, "name": "Java" },
   { "id": 2, "name": "Spring Boot" }
 ]
@@ -353,9 +347,9 @@ Optional:
 
 Frontend-Formulare verwenden diese Endpoints statt hardcodierter Kategorien oder Technologien.
 
----
+\---
 
-## 7. Anzeigen
+## 7\. Anzeigen
 
 ### Öffentliche Anzeigenliste
 
@@ -365,27 +359,27 @@ Frontend-Formulare verwenden diese Endpoints statt hardcodierter Kategorien oder
 
 ### Query-Parameter
 
-| Parameter | Bedeutung | Standard |
-|---|---|---|
-| suchbegriff | Suche in `titel` und `beschreibung`, case-insensitiv | – |
-| kategorieId | exakte Kategorie | – |
-| technologieIds | kommaseparierte IDs; **AND-Semantik** | – |
-| standort | case-insensitive Textsuche | – |
-| arbeitsweise | exakter Enum-Wert | – |
-| page | Seitennummer, ab 0 | `0` |
-| size | Seitengröße | `20` |
-| sort | erlaubte Sortierung | `erstelltAm,desc` |
+|Parameter|Bedeutung|Standard|
+|-|-|-|
+|suchbegriff|Suche in `titel` und `beschreibung`, case-insensitiv|–|
+|kategorieId|exakte Kategorie|–|
+|technologieIds|kommaseparierte IDs; **AND-Semantik**|–|
+|standort|case-insensitive Textsuche|–|
+|arbeitsweise|exakter Enum-Wert|–|
+|page|Seitennummer, ab 0|`0`|
+|size|Seitengröße|`20`|
+|sort|erlaubte Sortierung|`erstelltAm,desc`|
 
 **Maximale Seitengröße:** `50`
 
 Erlaubte Sortierungen:
 
-- `erstelltAm,desc`
-- `erstelltAm,asc`
+* `erstelltAm,desc`
+* `erstelltAm,asc`
 
 Beispiel:
 
-`GET /api/anzeigen?suchbegriff=java&kategorieId=1&technologieIds=1,2&arbeitsweise=REMOTE&page=0&size=20&sort=erstelltAm,desc`
+`GET /api/anzeigen?suchbegriff=java\\\\\\\&kategorieId=1\\\\\\\&technologieIds=1,2\\\\\\\&arbeitsweise=REMOTE\\\\\\\&page=0\\\\\\\&size=20\\\\\\\&sort=erstelltAm,desc`
 
 Bei mehreren `technologieIds` muss eine Anzeige **alle** ausgewählten Technologien enthalten.
 
@@ -393,22 +387,19 @@ Bei mehreren `technologieIds` muss eine Anzeige **alle** ausgewählten Technolog
 
 ```json
 {
-  "content": [
+  "content": \\\\\\\[
     {
       "id": 15,
       "titel": "Backend-Unterstützung für Lernprojekt gesucht",
       "beschreibungKurz": "Ich suche Unterstützung für mein Spring-Boot-Projekt.",
       "anzeigename": "Leon",
       "kategorie": { "id": 1, "name": "BACKEND" },
-      "technologien": [
+      "technologien": \\\\\\\[
         { "id": 1, "name": "Java" },
         { "id": 2, "name": "Spring Boot" }
       ],
-      "projektstand": "IN_ENTWICKLUNG",
-      "arbeitsweisen": [
-        "REMOTE",
-        "VOR_ORT"
-      ],
+      "projektstand": "IN\\\\\\\_ENTWICKLUNG",
+      "arbeitsweise": "REMOTE",
       "standort": null,
       "status": "ACTIVE",
       "erstelltAm": "2026-09-26T15:30:00"
@@ -423,11 +414,11 @@ Bei mehreren `technologieIds` muss eine Anzeige **alle** ausgewählten Technolog
 
 ### Sichtbarkeitsregeln
 
-- Gäste sehen alle `ACTIVE`, nicht gelöschten Anzeigen.
-- Angemeldete Benutzer sehen öffentlich nur `ACTIVE`, nicht gelöschte Anzeigen **anderer** Benutzer.
-- In Anzeigenlisten erscheinen eigene Anzeigen ausschließlich unter `/api/anzeigen/meine`. Der Detailabruf folgt den untenstehenden Zugriffsregeln.
+* Gäste sehen alle `ACTIVE`, nicht gelöschten Anzeigen.
+* Angemeldete Benutzer sehen öffentlich nur `ACTIVE`, nicht gelöschte Anzeigen **anderer** Benutzer.
+* In Anzeigenlisten erscheinen eigene Anzeigen ausschließlich unter `/api/anzeigen/meine`. Der Detailabruf folgt den untenstehenden Zugriffsregeln.
 
----
+\---
 
 ### Anzeigendetails
 
@@ -437,9 +428,9 @@ Bei mehreren `technologieIds` muss eine Anzeige **alle** ausgewählten Technolog
 
 ### Zugriffsregeln
 
-- `ACTIVE` und nicht gelöscht: öffentlich sichtbar.
-- `CLOSED` und nicht gelöscht: ausschließlich für den Eigentümer und Benutzer sichtbar, die bereits Teilnehmer einer Unterhaltung zu dieser Anzeige sind.
-- Soft-gelöscht: `404 Not Found`, auch für Eigentümer und bisherige Unterhaltungsteilnehmer. Diese Regel hat Vorrang vor dem Anzeigenstatus.
+* `ACTIVE` und nicht gelöscht: öffentlich sichtbar.
+* `CLOSED` und nicht gelöscht: ausschließlich für den Eigentümer und Benutzer sichtbar, die bereits Teilnehmer einer Unterhaltung zu dieser Anzeige sind.
+* Soft-gelöscht: `404 Not Found`, auch für Eigentümer und bisherige Unterhaltungsteilnehmer. Diese Regel hat Vorrang vor dem Anzeigenstatus.
 
 **Erfolg:** `200 OK`
 
@@ -456,16 +447,13 @@ Bei mehreren `technologieIds` muss eine Anzeige **alle** ausgewählten Technolog
   },
   "titel": "Backend-Unterstützung für Lernprojekt gesucht",
   "beschreibung": "Ich suche Unterstützung für mein Spring-Boot-Projekt.",
-  "anzeigentyp": "UNTERSTUETZUNG_GESUCHT",
-  "projektstand": "IN_ENTWICKLUNG",
-  "arbeitsweisen": [
-    "REMOTE",
-    "VOR_ORT"
-  ],
+  "anzeigentyp": "UNTERSTUETZUNG\\\\\\\_GESUCHT",
+  "projektstand": "IN\\\\\\\_ENTWICKLUNG",
+  "arbeitsweise": "REMOTE",
   "standort": null,
   "projektlink": null,
   "status": "ACTIVE",
-  "technologien": [
+  "technologien": \\\\\\\[
     { "id": 1, "name": "Java" },
     { "id": 2, "name": "Spring Boot" }
   ],
@@ -476,7 +464,7 @@ Bei mehreren `technologieIds` muss eine Anzeige **alle** ausgewählten Technolog
 
 Gelöschte Anzeigen liefern `404 Not Found`.
 
----
+\---
 
 ### Anzeige erstellen
 
@@ -488,16 +476,13 @@ Gelöschte Anzeigen liefern `404 Not Found`.
 {
   "titel": "Backend-Unterstützung für Lernprojekt gesucht",
   "beschreibung": "Ich suche Unterstützung für mein Spring-Boot-Projekt.",
-  "anzeigentyp": "UNTERSTUETZUNG_GESUCHT",
+  "anzeigentyp": "UNTERSTUETZUNG\\\\\\\_GESUCHT",
   "kategorieId": 1,
-  "projektstand": "IN_ENTWICKLUNG",
-  "arbeitsweisen": [
-    "REMOTE",
-    "VOR_ORT"
-  ],
+  "projektstand": "IN\\\\\\\_ENTWICKLUNG",
+  "arbeitsweise": "REMOTE",
   "standort": null,
   "projektlink": null,
-  "technologieIds": [1, 2, 3]
+  "technologieIds": \\\\\\\[1, 2, 3]
 }
 ```
 
@@ -511,13 +496,13 @@ Gelöschte Anzeigen liefern `404 Not Found`.
 
 ### Geschäftsregeln
 
-- Eigentümer wird aus der Session bestimmt.
-- `eigentuemerId` wird vom Client nicht akzeptiert.
-- Neue Anzeige erhält `ACTIVE`.
-- `VOR_ORT` und `HYBRID` benötigen `standort`.
-- Kategorie und alle Technologie-IDs müssen existieren.
+* Eigentümer wird aus der Session bestimmt.
+* `eigentuemerId` wird vom Client nicht akzeptiert.
+* Neue Anzeige erhält `ACTIVE`.
+* `VOR\\\\\\\_ORT` und `HYBRID` benötigen `standort`.
+* Kategorie und alle Technologie-IDs müssen existieren.
 
----
+\---
 
 ### Meine Anzeigen
 
@@ -527,32 +512,29 @@ Gelöschte Anzeigen liefern `404 Not Found`.
 
 Optionale Parameter:
 
-- `status=ACTIVE`
-- `status=CLOSED`
-- `page=0`
-- `size=20`
-- `sort=erstelltAm,desc`
+* `status=ACTIVE`
+* `status=CLOSED`
+* `page=0`
+* `size=20`
+* `sort=erstelltAm,desc`
 
 **Erfolg:** `200 OK`
 
 ```json
 {
-  "content": [
+  "content": \\\\\\\[
     {
       "id": 15,
       "titel": "React-Frontend für Lernplattform gesucht",
       "beschreibungKurz": "Das Backend mit Spring Boot steht bereits.",
       "kategorie": { "id": 2, "name": "FRONTEND" },
-      "technologien": [
+      "technologien": \\\\\\\[
         { "id": 8, "name": "React" },
         { "id": 9, "name": "TypeScript" },
         { "id": 2, "name": "Spring Boot" }
       ],
-      "projektstand": "PROTOTYP_VORHANDEN",
-      "arbeitsweisen": [
-        "REMOTE",
-        "VOR_ORT"
-      ],
+      "projektstand": "PROTOTYP\\\\\\\_VORHANDEN",
+      "arbeitsweise": "REMOTE",
       "standort": null,
       "status": "ACTIVE",
       "erstelltAm": "2026-03-12T10:00:00"
@@ -567,7 +549,7 @@ Optionale Parameter:
 
 Damit enthält die Response alle Daten, die die aktuelle „Meine Anzeigen“-UI pro Zeile benötigt.
 
----
+\---
 
 ### Anzeige bearbeiten
 
@@ -583,7 +565,7 @@ Request entspricht fachlich dem Erstellen-Request.
 
 Nur der Eigentümer darf bearbeiten. Eigentümer und Status können hier nicht geändert werden.
 
----
+\---
 
 ### Anzeige schließen
 
@@ -593,13 +575,13 @@ Nur der Eigentümer darf bearbeiten. Eigentümer und Status können hier nicht g
 
 **Erfolg:** `204 No Content`
 
-- Nur Eigentümer.
-- Status wird `CLOSED`.
-- `geschlossen_am` wird gesetzt.
-- Keine neuen Unterhaltungen.
-- Bestehende Unterhaltungen bleiben nutzbar.
+* Nur Eigentümer.
+* Status wird `CLOSED`.
+* `geschlossen\\\\\\\_am` wird gesetzt.
+* Keine neuen Unterhaltungen.
+* Bestehende Unterhaltungen bleiben nutzbar.
 
----
+\---
 
 ### Anzeige löschen
 
@@ -609,11 +591,11 @@ Nur der Eigentümer darf bearbeiten. Eigentümer und Status können hier nicht g
 
 **Erfolg:** `204 No Content`
 
-Das Löschen ist ein Soft Delete. `geloescht_am` wird gesetzt.
+Das Löschen ist ein Soft Delete. `geloescht\\\\\\\_am` wird gesetzt.
 
----
+\---
 
-## 8. Unterhaltungen
+## 8\. Unterhaltungen
 
 ### Unterhaltung starten
 
@@ -638,13 +620,13 @@ Der Endpoint darf ausschließlich für `ACTIVE`, nicht gelöschte Anzeigen verwe
 
 ### Geschäftsregeln
 
-- Eigene Anzeige: `409 Conflict`.
-- Geschlossene oder gelöschte Anzeige: immer `409 Conflict`, auch wenn bereits eine Unterhaltung existiert. Diese Prüfung erfolgt vor einer Wiederverwendung.
-- Pro Anzeige und Interessent höchstens eine Unterhaltung.
-- Bestehende Unterhaltung wird nur bei `ACTIVE`, nicht gelöschter Anzeige wiederverwendet.
-- Bestehende Unterhaltungen werden direkt über die Unterhaltungs-Endpunkte geöffnet, insbesondere `GET /api/unterhaltungen/{id}`. Bei geschlossenen Anzeigen wird dazu nicht dieser Start-Endpoint verwendet.
+* Eigene Anzeige: `409 Conflict`.
+* Geschlossene oder gelöschte Anzeige: immer `409 Conflict`, auch wenn bereits eine Unterhaltung existiert. Diese Prüfung erfolgt vor einer Wiederverwendung.
+* Pro Anzeige und Interessent höchstens eine Unterhaltung.
+* Bestehende Unterhaltung wird nur bei `ACTIVE`, nicht gelöschter Anzeige wiederverwendet.
+* Bestehende Unterhaltungen werden direkt über die Unterhaltungs-Endpunkte geöffnet, insbesondere `GET /api/unterhaltungen/{id}`. Bei geschlossenen Anzeigen wird dazu nicht dieser Start-Endpoint verwendet.
 
----
+\---
 
 ### Eigene Unterhaltungen
 
@@ -655,7 +637,7 @@ Der Endpoint darf ausschließlich für `ACTIVE`, nicht gelöschte Anzeigen verwe
 **Erfolg:** `200 OK`
 
 ```json
-[
+\\\\\\\[
   {
     "id": 7,
     "anzeige": {
@@ -675,7 +657,7 @@ Der Endpoint darf ausschließlich für `ACTIVE`, nicht gelöschte Anzeigen verwe
 ]
 ```
 
----
+\---
 
 ### Unterhaltung anzeigen
 
@@ -689,27 +671,27 @@ Bestehende Unterhaltungen werden direkt über diesen Endpoint geöffnet, auch na
 
 **Fehler:** `401`, `403`, `404`
 
----
+\---
 
-## 9. Nachrichten
+## 9\. Nachrichten
 
 ### Nachrichten laden
 
-`GET /api/unterhaltungen/{id}/nachrichten?page=0&size=50`
+`GET /api/unterhaltungen/{id}/nachrichten?page=0\\\\\\\&size=50`
 
 **Authentifizierung erforderlich:** Ja
 
 Standard:
 
-- `page = 0`
-- `size = 50`
-- maximale `size = 100`
+* `page = 0`
+* `size = 50`
+* maximale `size = 100`
 
 **Erfolg:** `200 OK`
 
 ```json
 {
-  "content": [
+  "content": \\\\\\\[
     {
       "id": 101,
       "absender": {
@@ -730,7 +712,7 @@ Standard:
 
 `page`, `size`, `totalElements` und `totalPages` sind Pagination-Metadaten und werden nicht als Nachrichtenspalten gespeichert.
 
----
+\---
 
 ### Nachricht senden
 
@@ -748,7 +730,7 @@ Standard:
 
 Der Absender wird aus der Session bestimmt. `absenderId` wird nicht vom Client akzeptiert.
 
----
+\---
 
 ### Als gelesen markieren
 
@@ -760,14 +742,15 @@ Der Absender wird aus der Session bestimmt. `absenderId` wird nicht vom Client a
 
 Nur Nachrichten des anderen Teilnehmers werden als gelesen markiert.
 
----
+\---
 
-## 10. UI-Funktionen ohne Backend im MVP
+## 10\. UI-Funktionen ohne Backend im MVP
 
 Die folgenden Elemente der Mockups besitzen im MVP bewusst keinen funktionalen Backend-Endpoint:
 
-- Notification-Bell
-- Profilbild-/Kamera-Upload
-- Datei-Anhang im Nachrichtenbereich
+* Notification-Bell
+* Profilbild-/Kamera-Upload
+* Datei-Anhang im Nachrichtenbereich
 
 Das Frontend soll diese Elemente für die erste Version ausblenden oder deaktiviert darstellen. Es darf dafür keine nicht dokumentierten Endpoints erfinden.
+
