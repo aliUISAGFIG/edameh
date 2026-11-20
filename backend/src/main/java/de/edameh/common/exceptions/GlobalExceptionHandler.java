@@ -5,6 +5,9 @@ import de.edameh.auth.exception.PasswortBestaetigungException;
 import de.edameh.auth.exception.UngueltigeAnmeldedatenException;
 import de.edameh.common.dto.ApiFehlerResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -100,9 +104,56 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiFehlerResponse> ungueltigeAnmeldung(
             UngueltigeAnmeldedatenException exception,
             HttpServletRequest request
-    ){
-        return fehler(HttpStatus.UNAUTHORIZED , "INVALID_CREDENTIALS" , exception.getMessage() ,request , Map.of());
+    ) {
+        return fehler(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", exception.getMessage(), request, Map.of());
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class) //این Exception معمولاً وقتی اتفاق می‌افته که عملیات دیتابیس یکی از محدودیت‌هاش رو نقض کنه
+    public ResponseEntity<ApiFehlerResponse> datenbankFehler(
+            DataIntegrityViolationException exception,
+            HttpServletRequest request
+    ) {
+        Throwable ursache = exception;
+
+        while (ursache != null) {
+
+            if (ursache instanceof ConstraintViolationException constraint) { //این Exception یعنی یکی از محدودیت‌های دیتابیس نقض شده.
+
+                String constraintName = constraint.getConstraintName();
+
+                boolean emailConstraint =
+                        "uq_benutzer_email_lower".equals(constraintName)
+                                || "benutzer_e_mail_key".equals(constraintName);
+
+                boolean uniqueViolation = "23505".equals(
+                        constraint.getSQLException().getSQLState()
+                );
+
+                if (emailConstraint && uniqueViolation) {
+                    return fehler(
+                            HttpStatus.CONFLICT,
+                            "EMAIL_ALREADY_EXISTS",
+                            "Diese E-Mail-Adresse ist bereits registriert.",
+                            request,
+                            Map.of()
+                    );
+                }
+            }
+
+            ursache = ursache.getCause(); //next
+        }
+
+        log.error("Unerwarteter Datenbankfehler", exception);
+
+        return fehler(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "DATABASE_ERROR",
+                "Ein interner Datenbankfehler ist aufgetreten.",
+                request,
+                Map.of()
+        );
+    }
+
 
 
     private ResponseEntity<ApiFehlerResponse> fehler(

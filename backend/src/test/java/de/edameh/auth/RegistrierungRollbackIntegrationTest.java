@@ -24,9 +24,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@ActiveProfiles("local")
 
-public class RegistrierungRollbackIntegrationTest {
+public class RegistrierungRollbackIntegrationTest extends AbstractPostgresIntegrationTest  {
 
     @MockitoBean
     private ProfilRepository profilRepository;

@@ -22,9 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("local")
 @Transactional
-public class AnmeldungAbmeldungIntegrationTest {
+public class AnmeldungAbmeldungIntegrationTest extends AbstractPostgresIntegrationTest {
 
     @Autowired
     private MockMvc mvc;

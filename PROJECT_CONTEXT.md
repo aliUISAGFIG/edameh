@@ -1,20 +1,23 @@
 # Project Context – Edameh
 
 ## Aktueller Stand
-Das Spring-Boot-Backend ist eingerichtet.
-PostgreSQL 17 läuft über Docker Compose.
-Die Anwendung kann erfolgreich eine Verbindung zur Datenbank herstellen.
-Flyway ist eingerichtet.
-Die initiale Datenbankstruktur wurde mit `V1__initial_schema.sql` erstellt; `V2__support_multiple_arbeitsweisen.sql` ergänzt mehrere Arbeitsweisen für Anzeigen.
-Beide Flyway-Migrationen wurden erfolgreich angewendet und validiert.
+Das Backend verwendet Java 25, Spring Boot 4.1.2 und Maven. Die Architektur bleibt ein modularer Monolith mit Package-by-Feature-Struktur.
+PostgreSQL 17 läuft für die lokale Entwicklung über Docker Compose (Host-Port 5433). Flyway verwaltet die Datenbankstruktur: `V1__initial_schema.sql`, `V2__support_multiple_arbeitsweisen.sql` und `V3__benutzer_email_case_insensitive_unique.sql`.
+Die Migration V3 fügt einen eindeutigen Index auf `lower(benutzer.e_mail)` hinzu, damit E-Mail-Adressen unabhängig von Groß-/Kleinschreibung eindeutig sind.
+
+Implementierte Authentifizierungs- und Benutzer-Endpunkte:
+- `GET /api/csrf`: CSRF-Token bereitstellen.
+- `POST /api/registrierung`: Benutzer und leeres Profil transaktional erstellen, Passwort mit BCrypt kodieren und automatisch per HTTP-Session anmelden (`201 Created`).
+- `POST /api/anmeldung`: vorhandenen Benutzer anhand E-Mail laden und Passwort mit `PasswordEncoder.matches(...)` prüfen; bei Erfolg HTTP-Session herstellen (`200 OK`), bei ungültigen Zugangsdaten `401`.
+- `POST /api/abmeldung`: Session/SecurityContext beenden und CSRF-Token löschen (`204 No Content`).
+- `GET /api/benutzer/ich`: Benutzeridentität aus der Session verwenden und aktuelle Daten als `BenutzerResponse` ohne Passwort/Hash liefern (ohne Anmeldung `401`).
+
+Spring Security verwendet `JSESSIONID`, einen serverseitigen `SecurityContext`, Cookie-basierten CSRF-Schutz (`XSRF-TOKEN`/`X-XSRF-TOKEN`) mit `csrf.spa()` sowie CORS für `http://localhost:5173`; kein JWT. Die zentrale API-Fehlerbehandlung umfasst Validierungs-, Anmeldungs-, Autorisierungs- und Datenbankfehler. SQLSTATE `23505` wird nur bei den bekannten E-Mail-Eindeutigkeitsbedingungen als `409 EMAIL_ALREADY_EXISTS` behandelt.
+Integrationstests verwenden MockMvc und eine isolierte PostgreSQL-Instanz mittels Testcontainers (Profil `test`, dynamische DataSource-Konfiguration). Laut Entwickler wurden nach der letzten Korrektur **16 Backend-Tests erfolgreich** mit `./mvnw test` ausgeführt (Stand 2026-11-20). Diese Angabe beruht auf dem gemeldeten lokalen Testlauf; sie wurde beim Dokumentations-Update nicht selbst erneut ausgeführt.
+
 Unter `frontend/` ist eine React-/TypeScript-SPA mit Vite, deutscher Oberfläche, responsiven Ansichten und hellem/dunklem Design implementiert.
-Kontrollierte Frontend-Designüberarbeitung am 30.09.2026 umgesetzt; Browser-Abnahme nach verweigerter lokaler Browserfreigabe noch offen. Umfang und Prüfgrenzen: `docs/design/frontend-review.md`.
-Das Frontend arbeitet derzeit mit einer separaten MSW-Mock-API; eine echte Frontend-Backend-Integration wurde noch nicht abgenommen.
-Im Backend sind `POST /api/registrierung`, `GET /api/csrf` und `GET /api/benutzer/ich` implementiert.
-Die Registrierung legt `Benutzer` und ein leeres `Profil` gemeinsam an, kodiert Passwörter mit BCrypt und meldet den Benutzer danach automatisch per HTTP-Session an.
-Spring Security nutzt `JSESSIONID`, `SecurityContext` in der HTTP-Session, Cookie-basierten CSRF-Schutz (`XSRF-TOKEN`/`X-XSRF-TOKEN`) und eine CORS-Konfiguration für `http://localhost:5173`.
-Globale API-Fehlerbehandlung und erste MockMvc-Integrationstests für Registrierung, Auto-Login, geschützte Endpunkte und CSRF sind vorhanden. Die Tests wurden nach Angabe des Entwicklers erfolgreich ausgeführt.
-`docs/design/api-contract.md` bleibt die verbindliche API-Quelle. Die reale Backend-Anbindung erfolgt später Feature für Feature über dieselbe zentrale HTTP-Schicht (Session und CSRF).
+Die kontrollierte Frontend-Designüberarbeitung vom 30.09.2026 ist dokumentiert; die Browser-Abnahme bleibt offen (`docs/design/frontend-review.md`). Das Frontend verwendet aktuell eine separate MSW-Mock-API. Die echte Frontend-Backend-Anbindung wurde noch nicht abgeschlossen.
+`docs/design/api-contract.md` bleibt die verbindliche API-Quelle. Die spätere Anbindung erfolgt Feature für Feature über den zentralen HTTP-Client mit Cookie-Session und CSRF.
 
 Folgende Dokumente sind vorhanden:
 
@@ -27,7 +30,7 @@ Folgende Dokumente sind vorhanden:
 - `docs/design/projektvorbereitung.md`
 - `docs/design/frontend-vorgaben.md`
 
-Das Spring-Boot-Projekt liegt unter `backend/` (Java 25, Spring Boot 4.1.1). Der Start mit Profil `local` und PostgreSQL 17 über Docker Compose wurde erfolgreich geprüft. Die ersten fachlichen Module `auth`, `benutzer` und `profile` sind implementiert; Anzeigen, Gespräche und weitere Fachmodule im Backend noch nicht.
+Das Spring-Boot-Projekt liegt unter `backend/` (Java 25, Spring Boot 4.1.2). Entwicklungsprofil `local` und Testprofil `test` verwenden getrennte PostgreSQL-Instanzen. Die Module `auth`, `benutzer` und die initiale Profilanlage sind implementiert; Fachfunktionen für Profilbearbeitung, Kategorien, Technologien, Anzeigen, Unterhaltungen und Nachrichten folgen.
 
 ---
 
@@ -44,22 +47,26 @@ Das Spring-Boot-Projekt liegt unter `backend/` (Java 25, Spring Boot 4.1.1). Der
 - API-Stil: REST
 - Package-Struktur: Package by Feature
 - Lokale Datenbank: Docker Compose
-- Integrationstests: Testcontainers als Zielarchitektur; aktuell MockMvc-Integrationstests mit `@ActiveProfiles("local")` und lokaler PostgreSQL-Datenbank
+- Integrationstests: MockMvc mit Testcontainers/PostgreSQL 17, `@ActiveProfiles("test")` über `de.edameh.auth.AbstractPostgresIntegrationTest` und `@DynamicPropertySource`; keine Verwendung der Entwicklungsdatenbank für die migrierten Tests
 
 ---
-## Umgesetzte Backend-Module und Authentifizierungsfluss (Stand 2026-11-17)
-`de.edameh.auth.controller`: `RegistrierungController` (`POST /api/registrierung`) und `CsrfController` (`GET /api/csrf`).
-`de.edameh.auth.dto`: `RegistrierungRequest`, `CsrfResponse`; `de.edameh.benutzer.dto.BenutzerResponse` ist das sichere API-Ausgabeformat ohne Passwort/Hash.
-`de.edameh.auth.service.RegistrierungService`: validiert Passwortbestätigung und E-Mail-Duplikate, kodiert das Passwort, speichert `Benutzer` und das leere `Profil` in einer Transaktion.
-`de.edameh.auth.service.SessionAnmeldungService`: erstellt/rotiert die HTTP-Session-ID, setzt die authentifizierte Identität `AngemeldeterBenutzer(id)`, speichert den `SecurityContext` über `HttpSessionSecurityContextRepository` und erneuert den CSRF-Token.
-`de.edameh.benutzer.controller.BenutzerController` und `de.edameh.benutzer.service.BenutzerService`: `GET /api/benutzer/ich` verwendet die authentifizierte Identität zur erneuten Benutzerabfrage und liefert `BenutzerResponse`.
-`de.edameh.config.SecurityConfig`: `SecurityFilterChain`, öffentliche CSRF-/Registrierungsroute (und Freigabe für die noch nicht implementierte Anmeldung), sonst Authentifizierung erforderlich; CORS für den lokalen Vite-Origin, `csrf.spa()` und Cookie-basierter CSRF-Token-Speicher. Form-Login und HTTP Basic deaktiviert, kein JWT.
-`de.edameh.config.PasswordConfig`: stellt `BCryptPasswordEncoder` als `PasswordEncoder`-Bean bereit.
-`de.edameh.common.exceptions.GlobalExceptionHandler` / `ApiFehlerResponse`: einheitliche Behandlung von API-Validierungs-, Registrierungs- und HTTP-Fehlern; Security-Fehler werden über `HandlerExceptionResolver` zugeleitet.
-`de.edameh.benutzer.repository.BenutzerRepository` und `de.edameh.profile.repository.ProfilRepository` basieren auf Spring Data JPA. Die physische Profil-Tabelle heißt `profile`; das Java-Package heißt ebenfalls `profile`.
-Vorhandener Test `RegistrierungIntegrationTest`: erfolgreiche Registrierung mit Session und anschließendem `/api/benutzer/ich`, `403` ohne CSRF sowie `401` ohne Session; `EdamehApplicationTests` prüft den Context-Start. Tests laut Entwickler erfolgreich nicht innerhalb dieses Dokumentations-Updates ausgeführt.
-Registrierung und automatische Anmeldung sind umgesetzt, aber `POST /api/anmeldung` und `POST /api/abmeldung` sind noch nicht implementiert. Die Freigabe des Login-Pfads in `SecurityConfig` ist kein implementierter Endpoint.
-Die E-Mail-Validierungsgrenze ist 254 Zeichen; die korrigierte Entity-Spaltenlänge und der HTTP-Status 400 bei abweichender Passwortbestätigung wurden vom Entwickler bestätigt, stehen aber noch nicht in der hochgeladenen älteren ZIP-Kopie.
+## Umgesetzte Backend-Module und Authentifizierungsfluss (Stand 2026-11-20)
+
+- `de.edameh.auth.controller`: `RegistrierungController` (`POST /api/registrierung`), `AnmeldungController` (`POST /api/anmeldung`), `AbmeldungController` (`POST /api/abmeldung`) und `CsrfController` (`GET /api/csrf`).
+- `de.edameh.auth.dto`: `RegistrierungRequest`, `AnmeldungRequest`, `CsrfResponse`; `de.edameh.benutzer.dto.BenutzerResponse` ist das sichere API-Ausgabeformat ohne Passwort/Hash.
+- `RegistrierungService.registrierung(...)`: prüft Passwortbestätigung und bestehende E-Mail, kodiert das Passwort mit BCrypt und speichert `Benutzer` sowie ein leeres `Profil` in einer Transaktion.
+- `AnmeldungService.anmelden(...)`: sucht den vorhandenen Benutzer über `BenutzerRepository.findByeMailIgnoreCase(...)`, validiert das Passwort per `PasswordEncoder.matches(...)` und liefert einen sicheren Benutzer-DTO; der eigentliche Session-Aufbau erfolgt danach im Controller.
+- `SessionAnmeldungService.anmelden(...)`: erstellt/rotiert die Session-ID, setzt `AngemeldeterBenutzer(id)` als Authentifizierungsidentität, speichert den `SecurityContext` über `HttpSessionSecurityContextRepository` und erneuert den CSRF-Token. Wird nach Registrierung und normaler Anmeldung wiederverwendet.
+- `SessionAbmeldungService.abmelden(...)`: verwendet `CsrfLogoutHandler` und `SecurityContextLogoutHandler`, um CSRF-Zustand und Login-Session zu beenden. Kein Löschen von `Benutzer` oder `Profil`.
+- `BenutzerController` / `BenutzerService`: `GET /api/benutzer/ich` liest die ID aus dem authentifizierten Principal, lädt den Benutzer über `findById(...)` neu aus der Datenbank und gibt `BenutzerResponse` zurück.
+- `SecurityConfig`: `SecurityFilterChain`, öffentliche CSRF-/Registrierungs-/Anmeldungsrouten, sonst Authentifizierung erforderlich; CORS für Vite, `csrf.spa()`, Cookie-CSRF-Repository und Session-SecurityContext-Repository. Form-Login und HTTP Basic deaktiviert.
+- `PasswordConfig`: stellt `BCryptPasswordEncoder` als `PasswordEncoder`-Bean bereit.
+- `GlobalExceptionHandler` / `ApiFehlerResponse`: einheitliche Fehlerdarstellung für ungültige Eingaben (`400`), doppelte E-Mail (`409`), ungültige Zugangsdaten (`401`), Security-/HTTP-Fehler und Datenbankfehler. Bei `DataIntegrityViolationException` werden SQLSTATE und Constraint-Name geprüft; unbekannte Datenbankfehler werden nicht fälschlich als doppelte E-Mail eingestuft.
+- `BenutzerRepository` und `ProfilRepository`: Spring Data JPA; die physische Profiltabelle heißt `profile` und das Package ebenfalls `profile`.
+- Flyway V3: Unique-Index `uq_benutzer_email_lower` auf `lower(e_mail)`; frühere Flyway-Dateien bleiben unverändert.
+- Tests: `RegistrierungIntegrationTest`, `AnmeldungAbmeldungIntegrationTest`, `RegistrierungFehlerIntegrationTest`, `RegistrierungRollbackIntegrationTest`, `BenutzerEmailUniqueIntegrationTest`, `RegistrierungHttpFehlerIntegrationTest`, `TestDatenbankIntegrationTest` sowie `EdamehApplicationTests` (Context-Start). Dazu gehören Session-/CSRF-Lebenszyklus, Login/Logout, fehlerhafte Eingaben, simuliertes Profil-Speicherproblem mit Transaktions-Rollback, echte PostgreSQL-Unique-Verletzung und HTTP-Fehlerzuordnung.
+- Testinfrastruktur: `de.edameh.auth.AbstractPostgresIntegrationTest` startet ein PostgreSQL-17-Testcontainer und gibt JDBC-Verbindungsdaten über `@DynamicPropertySource` weiter; `backend/src/test/resources/application-test.properties` aktiviert Flyway und Schema-Validierung. Alle Integrationstests und der Context-Test sollen ausschließlich das Testprofil verwenden. Der Entwickler bestätigt **16/16 erfolgreiche Tests** nach Anpassung des Context-Tests; die letzte hochgeladene ZIP-Kopie zeigt diese letzte lokale Anpassung noch nicht.
+
 ---
 
 ## Verbindliche Quellen
@@ -162,17 +169,16 @@ Das API-Feld für Anzeigen heißt `arbeitsweisen`.
 
 ## Aktueller Arbeitsschritt
 
-Benutzer/Registrierung inkl. Auto-Login, Session, CSRF, CORS, Fehlerformat und erster Integrationstests umgesetzt. Laut Entwickler laufen die bisherigen Tests erfolgreich; die beiden zuletzt gemeldeten Korrekturen (`PasswortBestaetigungException` -> HTTP 400 und E-Mail-Spaltenlänge 254) wurden lokal vorgenommen, sind aber im zuletzt hochgeladenen ZIP noch nicht enthalten. Aktuell folgt die Implementierung von Anmeldung/Abmeldung und erweiterter Authentifizierungstests.
+Authentifizierung und Basis-Benutzerfunktionen einschließlich Registrierung, Login, Logout, Auto-Login, HTTP-Session, CSRF/CORS, zentralem Fehlerformat sowie PostgreSQL-Eindeutigkeit der E-Mail sind implementiert. Die Testinfrastruktur ist auf eine isolierte Testcontainers-PostgreSQL-Datenbank umgestellt. Laut letztem Entwicklerbericht laufen **16 Backend-Tests erfolgreich** (Stand 2026-11-20). Die echte React-Backend-Integration ist noch offen.
 
 ---
 
 ## Nächster Schritt
 
-`POST /api/anmeldung` implementieren: vorhandenen Benutzer anhand E-Mail laden, Passwort mit `PasswordEncoder.matches(...)` prüfen, bei Erfolg denselben `SessionAnmeldungService` wie bei der Registrierung verwenden; Erfolg `200` mit `BenutzerResponse`, ungültige Zugangsdaten `401` mit `INVALID_CREDENTIALS`.
-`POST /api/abmeldung` implementieren: authentifizierte Session beenden, `SecurityContext` löschen, CSRF-Token erneuern bzw. invalidieren; Erfolg `204 No Content`.
-Integrationstests erweitern: gültige/ungültige Anmeldung, Abmeldung, Session-Persistenz, CSRF vor und nach Authentifizierungswechseln, doppelte E-Mail, Passwortbestätigung, Transaktions-Rollback und Fehlerformat.
-Test-Infrastruktur auf eine isolierte Datenbank, vorzugsweise Testcontainers, umstellen (aktuell laufen Tests mit Profil `local`).
-Danach die weiteren Module `profile`, Kategorien/Technologien, Anzeigen, Suche/Filter sowie Unterhaltungen/Nachrichten ausbauen.
+1. Einen reproduzierbaren Integrationstest für zwei konkurrierende Registrierungen mit derselben E-Mail entwickeln (echte getrennte Transaktionen; kein gemeinsam genutzter, durch `@Transactional` der Testmethode verfälschter Transaktionskontext). Prüfen, dass die Datenbank höchstens einen Benutzer zulässt und der zweite Versuch fachlich korrekt als `409 EMAIL_ALREADY_EXISTS` beantwortet wird. Den bestehenden HTTP-Test mit simulierter Service-Exception nicht mit einem echten Parallelitätstest verwechseln.
+2. Vor größeren Änderungen den bestandenen Teststand und diese Dokumentation in Git sichern. Lokale Secrets und `application-local.properties` dürfen nicht eingecheckt werden. Neue/angepasste Dateien und `git diff --cached` vor dem Commit gezielt prüfen.
+3. Danach mit der nächsten MVP-Funktion fortfahren: Profilbearbeitung bzw. Kategorien/Technologien und `Anzeigen` anhand von `docs/design/api-contract.md`, Domänenmodell und Datenbankentwurf; bestehende Architekturentscheidungen und bereits angewendete Flyway-Migrationen beibehalten.
+4. Die reale Frontend-Backend-Anbindung mit Session-Cookies, CSRF und dem zentralen API-Client separat integrieren und testen.
 
 ---
 
@@ -185,6 +191,16 @@ Neue wichtige Entscheidungen sollen hier dokumentiert werden, sobald sie währen
 ---
 
 ## Änderungsprotokoll
+### 2026-11-20 – Spring Boot 4.1.2, Auth-Fehlerfälle und isolierte Testdatenbank
+
+- Spring Boot auf `4.1.2` aktualisiert; Java 25 und Maven bleiben unverändert.
+- Registrierung, Anmeldung, Abmeldung, Session-/CSRF-Lebenszyklus und einheitliche Fehlerantworten weiter abgesichert.
+- Migration V3 (`uq_benutzer_email_lower` auf `lower(benutzer.e_mail)`) vorhanden; reale Unique-Constraint-Verletzung und gezielte Zuordnung zu HTTP `409 EMAIL_ALREADY_EXISTS` in Tests berücksichtigt.
+- Rollback nach simuliertem Fehler bei der Profilanlage geprüft. Der echte HTTP-Fehlerpfad wird zusätzlich mit MockMvc und simulierter Service-Exception abgedeckt; dies ist **kein** echter konkurrierender Registrierungstest.
+- Testcontainers PostgreSQL 17 als isolierte Datenbank unter Profil `test` eingerichtet; `AbstractPostgresIntegrationTest`, `@DynamicPropertySource` und `application-test.properties` werden verwendet. Der Context-Test wurde nach Entwicklerangabe ebenfalls auf die Testdatenbank umgestellt.
+- Laut Entwickler letzter gesamter Maven-Testlauf: **16 Tests erfolgreich, 0 Fehler**. Keine erneute Ausführung durch die Dokumentationsaktualisierung.
+- Bekannter ausstehender Schritt: parallele Registrierungsanfragen unter echter Datenbankkonkurrenz testen. Frontend nutzt noch MSW; keine bestätigte React-Backend-Integration.
+
 ### 2026-11-17 – Benutzerregistrierung, Session/CSRF und erster Integrationstest-Stand dokumentiert
 `auth`/`benutzer`/`profile`-Klassen und ihre tatsächlichen Verantwortlichkeiten aus dem bereitgestellten ZIP dokumentiert; bestehende Architektur, Migrationen und API-Contract nicht geändert.
 `POST /api/registrierung`, `GET /api/csrf`, `GET /api/benutzer/ich`, automatische Anmeldung nach Registrierung, Session-Speicherung, CSRF/CORS, BCrypt und globale Fehlerbehandlung als implementierter Stand eingetragen.
@@ -215,6 +231,15 @@ API-Vertrag unverändert; offene Gesprächsdetails auf Benutzerwunsch zurückges
 - Direkter Zugriff auf bestehende Unterhaltungen über die Unterhaltungs-Endpunkte dokumentiert.
 - Bearbeitung des Anzeigenamens über den Profil-Endpoint bei unveränderter Speicherung in `benutzer` und Validierung von 3–50 Zeichen festgelegt.
 - API-Vertrag, Domänenmodell, User Flows, Datenbankentwurf und Frontend-Vorgaben abgeglichen. Die Backend-Implementierung hat weiterhin nicht begonnen.
+### 2026-11-19 – Authentifizierung und E-Mail-Eindeutigkeit
+
+- Registrierung mit automatischer Anmeldung, Anmeldung bestehender Benutzer und Abmeldung über HTTP-Session implementiert.
+- Session-, Cookie- und CSRF-Verhalten durch Integrationstests geprüft.
+- Fehlerfälle für doppelte E-Mail-Adressen, ungültige Eingaben und falsche Passwörter getestet.
+- Transaktionales Rollback bei simuliertem Fehler während der Profilspeicherung erfolgreich getestet.
+- Alle 12 Backend-Tests erfolgreich ausgeführt.
+- Flyway-Migration V3 ergänzt: eindeutiger Index auf `lower(benutzer.e_mail)` zur Durchsetzung der E-Mail-Eindeutigkeit unabhängig von Groß-/Kleinschreibung.
+- Nächster Schritt: Datenbankseitige Unique-Constraint-Verletzungen gezielt behandeln und als `409 Conflict` zurückgeben; anschließend Integrationstests mit echter PostgreSQL-Constraint-Verletzung.
 
 ### Initialer Stand
 
